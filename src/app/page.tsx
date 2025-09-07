@@ -4,7 +4,9 @@ import Home from "./components/home";
 import { LoginStatusResponse } from "./type";
 
 export default async function HomePage() {
-  const checkLoginStatusApi = process.env.LINE_CHECK_LOGIN_STATUS_URI as string | "";
+  const checkLoginStatusApi = process.env.LINE_CHECK_LOGIN_STATUS_URI as
+    | string
+    | "";
   const cookieStore = cookies();
   const sessionCookie = (await cookieStore).get("session_id");
 
@@ -28,9 +30,7 @@ export default async function HomePage() {
     }
 
     const user = data.user!;
-    return (
-      <Home user={user}/>
-    );
+    return <Home user={user} />;
   } catch (error) {
     console.error("ログイン状態の確認中にエラーが発生しました:", error);
     redirect("/login");

@@ -12,15 +12,8 @@ export default function Callback() {
   }, [router]);
 
   return (
-    <Flex 
-      align="center" 
-      justify="center" 
-      height="100vh"
-    >
-      <Text 
-        fontSize="2xl" 
-        fontWeight="bold"
-      >
+    <Flex align="center" justify="center" height="100vh">
+      <Text fontSize="2xl" fontWeight="bold">
         ログイン処理中です...
       </Text>
     </Flex>

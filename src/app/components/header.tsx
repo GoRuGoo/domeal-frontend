@@ -6,8 +6,8 @@ interface HeaderProps {
   icon: string;
 }
 
-export function Header({icon}: HeaderProps) {
-  console.log(icon)
+export function Header({ icon }: HeaderProps) {
+  console.log(icon);
   return (
     <Box width="100%" padding={6} height="100px" position="relative">
       <Flex
@@ -53,7 +53,7 @@ export function Header({icon}: HeaderProps) {
             borderRadius="10px"
             src={icon}
             alt={icon}
-            />
+          />
         </Flex>
       </Flex>
     </Box>

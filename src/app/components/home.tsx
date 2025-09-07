@@ -42,10 +42,10 @@ const testRoomData = (): RoomType[] => {
 };
 
 interface HomeProps {
-  user: User
+  user: User;
 }
 
-export default function Home({user}: HomeProps) {
+export default function Home({ user }: HomeProps) {
   const router = useRouter();
   const [rooms, setRooms] = useState<RoomType[]>(testRoomData);
 
@@ -56,7 +56,7 @@ export default function Home({user}: HomeProps) {
   return (
     <Box>
       <Box pb="100px">
-        <Header icon={user.picture}/>
+        <Header icon={user.picture} />
         <SearchInput />
         <RecipeList rooms={rooms} onRoomClick={handleIntoRoom} />
         <Footer />
