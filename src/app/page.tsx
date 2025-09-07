@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import Home from "./components/home";
 import { LoginStatusResponse } from "./type";
+import HomeClient from "./home-client";
 
 export default async function HomePage() {
   const checkLoginStatusApi = process.env.LINE_CHECK_LOGIN_STATUS_URI as
@@ -30,7 +30,7 @@ export default async function HomePage() {
     }
 
     const user = data.user!;
-    return <Home user={user} />;
+    return <HomeClient user={user} />;
   } catch (error) {
     console.error("ログイン状態の確認中にエラーが発生しました:", error);
     redirect("/login");

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RoomType, User } from "../type";
 import { useRouter } from "next/navigation";
 import { Box } from "@chakra-ui/react";
@@ -52,6 +52,10 @@ export default function Home({ user }: HomeProps) {
   const handleIntoRoom = (roomId: string) => {
     router.push(`/room/${roomId}/division`);
   };
+
+  useEffect(() => {
+    console.log("hello");
+  }, []);
 
   return (
     <Box>

@@ -5,7 +5,7 @@ export function SearchInput() {
   return (
     <InputGroup
       startElement={<HiMagnifyingGlass />}
-      width="350px"
+      width="calc(100% - 40px)"
       height="52px"
       left="20px"
       marginTop="20px"

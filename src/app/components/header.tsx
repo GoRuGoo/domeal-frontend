@@ -7,7 +7,6 @@ interface HeaderProps {
 }
 
 export function Header({ icon }: HeaderProps) {
-  console.log(icon);
   return (
     <Box width="100%" padding={6} height="100px" position="relative">
       <Flex
