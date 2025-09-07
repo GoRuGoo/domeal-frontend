@@ -1,13 +1,22 @@
-export type RoomType = {
-  id: string;
-  roomName: string;
-  roomPhoto: string;
-  currentParticipants: number;
-};
+interface Member {
+  user_id: number;
+  display_name: string;
+  picture_url: string;
+  is_owner: boolean;
+}
+
+export interface Group {
+  id: number;
+  name: string;
+  menu: string;
+  menu_image_url: string;
+  created_by: number;
+  members: Member[] | null;
+}
 
 export type RecipeListProps = {
-  rooms: RoomType[];
-  onRoomClick: (roomId: string) => void;
+  groups: Group[];
+  userId: number;
 };
 
 // ユーザ情報の型
