@@ -12,39 +12,29 @@ import {
   Icon,
   Text,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { selectedDivisionType, WorkDivisionType } from "../../type";
-import { RoomType } from "@/app/type";
 import { MdKeyboardArrowRight } from "react-icons/md";
-
-const testRoomData: RoomType = {
-  id: "3",
-  roomName: "焼きそば",
-  roomPhoto: "https://www.takarashuzo.co.jp/cooking/pic/recipe/850.jpg",
-  currentParticipants: 6,
-};
-
-const testDivisionData = (): WorkDivisionType => {
-  return {
-    room: testRoomData,
-    division: {
-      shopping: testRoomData.currentParticipants,
-      cooking: 0,
-      cleaning: 0,
-    },
-  };
-};
+import { usePathname } from "next/navigation";
+import { Group } from "@/app/type";
+import { useRouter } from "next/navigation";
 
 const DIVISION: selectedDivisionType[] = ["shopping", "cooking", "cleaning"];
 
 export default function DivisionWork() {
-  const [divisionWork, setDivisionWork] =
-    useState<WorkDivisionType>(testDivisionData);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const [group, setGroup] = useState<Group>();
+  const [divisionWork, setDivisionWork] = useState<
+    WorkDivisionType | undefined
+  >();
   const [selectedDivision, setSelectedDivision] =
     useState<selectedDivisionType>("shopping");
 
   const handleCardClick = (tappedDivision: selectedDivisionType) => {
     if (selectedDivision === tappedDivision) return;
+    if (!divisionWork) return;
     const updatedDivision = {
       ...divisionWork.division,
       [selectedDivision]: divisionWork.division[selectedDivision] - 1,
@@ -52,11 +42,43 @@ export default function DivisionWork() {
     };
 
     setDivisionWork({
-      ...divisionWork,
+      ...divisionWork!,
       division: updatedDivision,
     });
     setSelectedDivision(tappedDivision);
   };
+
+  useEffect(() => {
+    const fetchGroup = async () => {
+      try {
+        const res = await fetch("/api/groups");
+        const fetched = await res.json();
+        const data: Group[] = fetched.groups;
+
+        const segments = pathname.split("/").filter(Boolean);
+        const groupId = segments[1];
+
+        const matched = data.find((g) => g.id === Number(groupId));
+        setGroup(matched);
+
+        const division: WorkDivisionType = {
+          room: matched!,
+          division: {
+            shopping: matched!.members!.length,
+            cooking: 0,
+            cleaning: 0,
+          },
+        };
+        setDivisionWork(division);
+      } catch (err) {
+        console.error("グループ取得失敗:", err);
+      }
+    };
+
+    fetchGroup();
+  }, [pathname]);
+
+  if (!divisionWork) return;
 
   return (
     <Box height="100vh" overflowY="hidden">
@@ -80,6 +102,7 @@ export default function DivisionWork() {
           color="#5D4108FF"
           boxShadow="md"
           _hover={{ bg: "#ECA517FF" }}
+          onClick={() => router.push(`/room/${group?.id}/receipt`)}
         >
           <Icon as={MdKeyboardArrowRight} />
         </Button>

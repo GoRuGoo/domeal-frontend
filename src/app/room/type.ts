@@ -1,7 +1,7 @@
-import { RoomType } from "../type";
+import { Group } from "../type";
 
 export type WorkDivisionType = {
-  room: RoomType;
+  room: Group;
   division: {
     shopping: number;
     cooking: number;

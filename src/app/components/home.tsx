@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Group, User } from "../type";
-import { useRouter } from "next/navigation";
 import { Box } from "@chakra-ui/react";
 import { Header } from "./header";
 import { SearchInput } from "./searchInput";
@@ -14,12 +13,9 @@ interface HomeProps {
 }
 
 export default function Home({ user }: HomeProps) {
-  const router = useRouter();
   const [groups, setGroups] = useState<Group[]>([]);
 
   useEffect(() => {
-    console.log("hello");
-
     const fetchGroups = async () => {
       try {
         const res = await fetch("/api/groups"); // これだけでOK

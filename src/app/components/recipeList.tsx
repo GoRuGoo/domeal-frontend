@@ -10,14 +10,21 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
+import { IoIosAdd } from "react-icons/io";
 import { RecipeListProps } from "../type";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export function RecipeList({ groups, userId }: RecipeListProps) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [name, setName] = useState("");
   const [menu, setMenu] = useState("");
   const url = "https://"; // TODO: 写真選ぶ実装
+
+  const handleIntoRoom = (id: number) => {
+    router.push(`/room/${id}/division`);
+  };
 
   const handleCreate = () => {
     const createGroup = async () => {
@@ -72,7 +79,7 @@ export function RecipeList({ groups, userId }: RecipeListProps) {
               boxShadow="md"
               borderRadius="md"
               overflow="hidden"
-              onClick={() => {}}
+              onClick={() => handleIntoRoom(group.id)}
             >
               <Box width="100%" pb="100%" position="relative">
                 <Image
@@ -89,17 +96,18 @@ export function RecipeList({ groups, userId }: RecipeListProps) {
 
               <Box p={2} width="100%">
                 <Text fontWeight="bold" textAlign="center">
-                  {group.name}
+                  {group.name} : {group.menu}
                 </Text>
                 <Flex justifyContent="center" mt={2}>
                   {Array.from({ length: group.members?.length || 0 }).map(
                     (_, index) => (
-                      <Box
+                      <Image
                         key={index}
-                        width="16px"
-                        height="16px"
+                        src={group.members![index].picture_url}
+                        alt=""
+                        width="30px"
+                        height="30px"
                         borderRadius="full"
-                        bg="red.500"
                         mx="2px"
                       />
                     ),
@@ -116,11 +124,12 @@ export function RecipeList({ groups, userId }: RecipeListProps) {
         right="40px"
         colorScheme="green"
         borderRadius="full"
-        width="60px"
-        height="60px"
+        backgroundColor="#EFB034FF"
+        width="40px"
+        height="40px"
         onClick={() => setIsOpen(true)}
       >
-        +
+        <IoIosAdd />
       </Button>
 
       {isOpen && (
@@ -136,7 +145,6 @@ export function RecipeList({ groups, userId }: RecipeListProps) {
           alignItems="center"
           justifyContent="center"
         >
-          {/* モーダル本体 */}
           <Box
             bg="white"
             borderRadius="md"
@@ -166,7 +174,7 @@ export function RecipeList({ groups, userId }: RecipeListProps) {
               <Button variant="outline" onClick={handleClose}>
                 キャンセル
               </Button>
-              <Button colorScheme="green" onClick={handleCreate}>
+              <Button backgroundColor="#EFB034FF" onClick={handleCreate}>
                 作成
               </Button>
             </Flex>
