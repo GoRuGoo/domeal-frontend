@@ -1,62 +1,38 @@
-"use client";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import Home from "./components/home";
+import { LoginStatusResponse } from "./type";
 
-import { useState } from "react";
-import { RoomType } from "./type";
-import { Box } from "@chakra-ui/react";
-import { Header } from "./components/header";
-import { SearchInput } from "./components/searchInput";
-import { RecipeList } from "./components/recipeList";
-import { Footer } from "./components/footer";
-import { useRouter } from "next/navigation";
+export default async function HomePage() {
+  const checkLoginStatusApi = process.env.LINE_CHECK_LOGIN_STATUS_URI as string | "";
+  const cookieStore = cookies();
+  const sessionCookie = (await cookieStore).get("session_id");
 
-const testRoomData = (): RoomType[] => {
-  return [
-    {
-      id: "1",
-      roomName: "唐揚げ",
-      roomPhoto:
-        "https://housefoods.jp/_sys/catimages/recipe/hfrecipe/items/00016989/0.jpeg",
-      currentParticipants: 3,
-    },
-    {
-      id: "2",
-      roomName: "オムライス",
-      roomPhoto:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuVHkPrpGGAokvHTcAk7Jd1vRPwJ7GZaI9ZA&s",
-      currentParticipants: 2,
-    },
-    {
-      id: "3",
-      roomName: "焼きそば",
-      roomPhoto: "https://www.takarashuzo.co.jp/cooking/pic/recipe/850.jpg",
-      currentParticipants: 6,
-    },
-    {
-      id: "4",
-      roomName: "カレー",
-      roomPhoto:
-        "https://housefoods.jp/_sys/catimages/recipe/hfrecipe/items/00025463/0.jpeg",
-      currentParticipants: 4,
-    },
-  ];
-};
+  try {
+    const response = await fetch(checkLoginStatusApi, {
+      headers: {
+        Cookie: sessionCookie
+          ? `${sessionCookie.name}=${sessionCookie.value}`
+          : "",
+      },
+      cache: "no-store",
+    });
 
-export default function Home() {
-  const router = useRouter();
-  const [rooms, setRooms] = useState<RoomType[]>(testRoomData);
+    if (!response.ok) {
+      throw new Error("APIから無効なレスポンスが返されました");
+    }
 
-  const handleIntoRoom = (roomId: string) => {
-    router.push(`/room/${roomId}/division`);
-  };
+    const data: LoginStatusResponse = await response.json();
+    if (!data.is_logged_in) {
+      redirect("/login");
+    }
 
-  return (
-    <Box>
-      <Box pb="100px">
-        <Header />
-        <SearchInput />
-        <RecipeList rooms={rooms} onRoomClick={handleIntoRoom} />
-        <Footer />
-      </Box>
-    </Box>
-  );
+    const user = data.user!;
+    return (
+      <Home user={user}/>
+    );
+  } catch (error) {
+    console.error("ログイン状態の確認中にエラーが発生しました:", error);
+    redirect("/login");
+  }
 }

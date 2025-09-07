@@ -10,7 +10,6 @@ import {
   Flex,
   Heading,
   Icon,
-  SimpleGrid,
   Text,
 } from "@chakra-ui/react";
 import { useState } from "react";
@@ -35,6 +34,8 @@ const testDivisionData = (): WorkDivisionType => {
     },
   };
 };
+
+const DIVISION: selectedDivisionType[] = ["shopping", "cooking", "cleaning"];
 
 export default function DivisionWork() {
   const [divisionWork, setDivisionWork] =
@@ -62,6 +63,7 @@ export default function DivisionWork() {
       <Flex
         padding={4}
         marginTop="10px"
+        left="30px"
         justifyContent="space-between"
         alignItems="center"
       >
@@ -83,32 +85,50 @@ export default function DivisionWork() {
         </Button>
       </Flex>
 
-      <SimpleGrid columns={{ base: 1, md: 3 }} gap={8} padding={2}>
-        <Button
-          variant="ghost"
-          width="100%"
-          height="100%"
-          display="flex"
-          flexDirection="column"
-          alignSelf="stretch"
-          onClick={() => handleCardClick("shopping")}
-        >
-          <Card.Root
+      <Flex
+        justifyContent="space-evenly"
+        direction="column"
+        height="calc(100vh - 100px)"
+        padding={2}
+        gap={4}
+      >
+        {DIVISION.map((divisionName) => (
+          <Button
+            key={divisionName}
+            variant="ghost"
             width="100%"
-            height="100%"
-            backgroundColor={
-              selectedDivision === "shopping" ? "#ECA517FF" : "#F3F4F6FF"
-            }
+            height="150px"
+            display="flex"
+            flexDirection="column"
+            alignSelf="stretch"
+            onClick={() => handleCardClick(divisionName)}
           >
-            <CardHeader>
-              <Heading fontSize="16px" textAlign="center">
-                買い出し
-              </Heading>
-            </CardHeader>
-            <CardBody textAlign="center">
-              <Flex justifyContent="center" mt={2} minHeight="24px">
-                {Array.from({ length: divisionWork.division.shopping }).map(
-                  (_, index) => (
+            <Card.Root
+              width="100%"
+              height="100%"
+              backgroundColor={
+                selectedDivision === divisionName ? "#ECA517FF" : "#F3F4F6FF"
+              }
+            >
+              <CardHeader>
+                <Heading fontSize="16px" textAlign="center">
+                  {divisionName === "shopping"
+                    ? "買い出し"
+                    : divisionName === "cooking"
+                      ? "買い出し"
+                      : "片付け"}
+                </Heading>
+              </CardHeader>
+              <CardBody textAlign="center">
+                <Flex justifyContent="center" mt={2} minHeight="24px">
+                  {Array.from({
+                    length:
+                      divisionName === "shopping"
+                        ? divisionWork.division.shopping
+                        : divisionName === "cooking"
+                          ? divisionWork.division.cooking
+                          : divisionWork.division.cleaning,
+                  }).map((_, index) => (
                     <Box
                       key={index}
                       width="24px"
@@ -117,93 +137,13 @@ export default function DivisionWork() {
                       bg="red.500"
                       mx="2px"
                     />
-                  ),
-                )}
-              </Flex>
-            </CardBody>
-          </Card.Root>
-        </Button>
-
-        <Button
-          variant="ghost"
-          width="100%"
-          height="100%"
-          display="flex"
-          flexDirection="column"
-          alignSelf="stretch"
-          onClick={() => handleCardClick("cooking")}
-        >
-          <Card.Root
-            width="100%"
-            height="100%"
-            backgroundColor={
-              selectedDivision === "cooking" ? "#ECA517FF" : "#F3F4F6FF"
-            }
-          >
-            <CardHeader>
-              <Heading size="md" textAlign="center">
-                調理
-              </Heading>
-            </CardHeader>
-            <CardBody textAlign="center">
-              <Flex justifyContent="center" mt={2} minHeight="24px">
-                {Array.from({ length: divisionWork.division.cooking }).map(
-                  (_, index) => (
-                    <Box
-                      key={index}
-                      width="24px"
-                      height="24px"
-                      borderRadius="full"
-                      bg="red.500"
-                      mx="2px"
-                    />
-                  ),
-                )}
-              </Flex>
-            </CardBody>
-          </Card.Root>
-        </Button>
-
-        <Button
-          variant="ghost"
-          width="100%"
-          height="100%"
-          display="flex"
-          flexDirection="column"
-          alignSelf="stretch"
-          onClick={() => handleCardClick("cleaning")}
-        >
-          <Card.Root
-            width="100%"
-            height="100%"
-            backgroundColor={
-              selectedDivision === "cleaning" ? "#ECA517FF" : "#F3F4F6FF"
-            }
-          >
-            <CardHeader>
-              <Heading size="md" textAlign="center">
-                片付け
-              </Heading>
-            </CardHeader>
-            <CardBody textAlign="center">
-              <Flex justifyContent="center" mt={2} minHeight="24px">
-                {Array.from({ length: divisionWork.division.cleaning }).map(
-                  (_, index) => (
-                    <Box
-                      key={index}
-                      width="24px"
-                      height="24px"
-                      borderRadius="full"
-                      bg="red.500"
-                      mx="2px"
-                    />
-                  ),
-                )}
-              </Flex>
-            </CardBody>
-          </Card.Root>
-        </Button>
-      </SimpleGrid>
+                  ))}
+                </Flex>
+              </CardBody>
+            </Card.Root>
+          </Button>
+        ))}
+      </Flex>
 
       <Footer />
     </Box>

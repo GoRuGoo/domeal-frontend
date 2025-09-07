@@ -1,8 +1,13 @@
-import { Box, Flex, Text } from "@chakra-ui/react";
+import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import { BsBell } from "react-icons/bs";
 import { PiForkKnifeFill } from "react-icons/pi";
 
-export function Header() {
+interface HeaderProps {
+  icon: string;
+}
+
+export function Header({icon}: HeaderProps) {
+  console.log(icon)
   return (
     <Box width="100%" padding={6} height="100px" position="relative">
       <Flex
@@ -15,8 +20,8 @@ export function Header() {
       >
         {/* 既存のフォークとナイフのアイコンと背景Box */}
         <Box
-          width="50px"
-          height="50px"
+          width="40px"
+          height="40px"
           padding="0px"
           display="flex"
           alignItems="center"
@@ -40,9 +45,15 @@ export function Header() {
 
         {/* ベルアイコンと丸い形のグループ */}
         <Flex alignItems="center" gap={4}>
-          <BsBell size="24px" />
+          <BsBell size="40px" />
           {/* 丸い形のインジケータ */}
-          <Box width="24px" height="24px" borderRadius="full" bg="#F06A6AFF" />
+          <Image
+            width="40px"
+            height="40px"
+            borderRadius="10px"
+            src={icon}
+            alt={icon}
+            />
         </Flex>
       </Flex>
     </Box>
