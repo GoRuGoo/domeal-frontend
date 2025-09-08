@@ -2,8 +2,8 @@
 
 import { Box, Flex, Text, Icon } from "@chakra-ui/react";
 import { BiHome } from "react-icons/bi";
-import { ImEarth } from "react-icons/im";
 import { IoPersonOutline } from "react-icons/io5";
+import { PiForkKnifeFill } from "react-icons/pi";
 
 export function Footer() {
   return (
@@ -13,9 +13,7 @@ export function Footer() {
       height="70px"
       py={4}
       px={6}
-      bg="gray.100"
-      borderTop="1px solid"
-      borderColor="gray.200"
+      mb={2}
       position="fixed"
       bottom="0"
       zIndex="10"
@@ -28,23 +26,23 @@ export function Footer() {
       >
         {/* Room メニュー */}
         <Flex direction="column" alignItems="center" cursor="pointer">
-          <Icon as={BiHome} w={6} h={6} color="#EFB034FF" />
+          <Icon as={BiHome} w={5} h={5} color="#EFB034FF" />
           <Text fontSize="sm" mt={1} color="#EFB034FF">
-            Room
+            Home
           </Text>
         </Flex>
 
         {/* 請求選択 メニュー */}
         <Flex direction="column" alignItems="center" cursor="pointer">
-          <Icon as={ImEarth} w={6} h={6} color="#EFB034FF" />
+          <Icon as={PiForkKnifeFill} w={5} h={5} color="#EFB034FF" />
           <Text fontSize="sm" mt={1} color="#EFB034FF">
-            請求選択
+            Room
           </Text>
         </Flex>
 
         {/* Profile メニュー */}
         <Flex direction="column" alignItems="center" cursor="pointer">
-          <Icon as={IoPersonOutline} w={6} h={6} color="#EFB034FF" />
+          <Icon as={IoPersonOutline} w={5} h={5} color="#EFB034FF" />
           <Text fontSize="sm" mt={1} color="#EFB034FF">
             Profile
           </Text>

@@ -82,36 +82,17 @@ export default function DivisionWork() {
 
   return (
     <Box height="100vh" overflowY="hidden">
-      <Flex
-        padding={4}
-        marginTop="10px"
-        left="30px"
-        justifyContent="space-between"
-        alignItems="center"
-      >
+      <Flex padding={4} marginTop="10px" left="30px" alignItems="center">
         <Text fontSize="20px" fontWeight="bold">
           役割分担
         </Text>
-
-        <Button
-          width="50px"
-          height="30px"
-          right="10px"
-          borderRadius="10px"
-          background="#EFB034FF"
-          color="#5D4108FF"
-          boxShadow="md"
-          _hover={{ bg: "#ECA517FF" }}
-          onClick={() => router.push(`/room/${group?.id}/settlement`)}
-        >
-          <Icon as={MdKeyboardArrowRight} />
-        </Button>
       </Flex>
 
       <Flex
         justifyContent="space-evenly"
         direction="column"
-        height="calc(100vh - 100px)"
+        alignItems="center"
+        height="70vh"
         padding={2}
         gap={4}
       >
@@ -119,54 +100,82 @@ export default function DivisionWork() {
           <Button
             key={divisionName}
             variant="ghost"
-            width="100%"
-            height="150px"
+            width="90%"
+            height="30%"
             display="flex"
             flexDirection="column"
             alignSelf="stretch"
+            padding={0}
+            mx="auto"
             onClick={() => handleCardClick(divisionName)}
           >
             <Card.Root
               width="100%"
               height="100%"
+              position="relative"
+              borderRadius="6px"
               backgroundColor={
                 selectedDivision === divisionName ? "#ECA517FF" : "#F3F4F6FF"
               }
+              borderColor={
+                selectedDivision === divisionName ? "#ECA517FF" : "#F3F4F6FF"
+              }
             >
-              <CardHeader>
-                <Heading fontSize="16px" textAlign="center">
+              <CardHeader position="absolute">
+                <Heading fontSize="20px" fontWeight="bold">
                   {divisionName === "shopping"
                     ? "買い出し"
                     : divisionName === "cooking"
-                      ? "買い出し"
+                      ? "料理"
                       : "片付け"}
                 </Heading>
               </CardHeader>
-              <CardBody textAlign="center">
-                <Flex justifyContent="center" mt={2} minHeight="24px">
-                  {Array.from({
-                    length:
-                      divisionName === "shopping"
-                        ? divisionWork.division.shopping
-                        : divisionName === "cooking"
-                          ? divisionWork.division.cooking
-                          : divisionWork.division.cleaning,
-                  }).map((_, index) => (
-                    <Box
-                      key={index}
-                      width="24px"
-                      height="24px"
-                      borderRadius="full"
-                      bg="red.500"
-                      mx="2px"
-                    />
-                  ))}
-                </Flex>
+
+              <CardBody
+                position="absolute"
+                top="8px"
+                right="12px"
+                display="grid"
+                gridTemplateColumns="repeat(3, 24px)" // 横3列固定
+                gap="4px"
+              >
+                {Array.from({
+                  length:
+                    divisionName === "shopping"
+                      ? divisionWork.division.shopping
+                      : divisionName === "cooking"
+                        ? divisionWork.division.cooking
+                        : divisionWork.division.cleaning,
+                }).map((_, index) => (
+                  <Box
+                    key={index}
+                    width="24px"
+                    height="24px"
+                    borderRadius="full"
+                    bg="red.500"
+                  />
+                ))}
               </CardBody>
             </Card.Root>
           </Button>
         ))}
       </Flex>
+
+      <Button
+        position="fixed"
+        bottom="100px"
+        right="30px"
+        colorScheme="green"
+        borderRadius="full"
+        backgroundColor="#EFB034FF"
+        color="black"
+        width="60px"
+        height="60px"
+        _hover={{ bg: "#ECA517FF" }}
+        onClick={() => router.push(`/room/${group?.id}/settlement`)}
+      >
+        <Icon as={MdKeyboardArrowRight} />
+      </Button>
 
       <Footer />
     </Box>

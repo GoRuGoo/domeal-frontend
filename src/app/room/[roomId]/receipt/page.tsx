@@ -2,7 +2,15 @@
 
 import { Footer } from "@/app/components/footer";
 import { Group } from "@/app/type";
-import { Box, Button, Flex, Heading, Image, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Image,
+  Spinner,
+  Text,
+} from "@chakra-ui/react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -164,6 +172,7 @@ export default function Receipt() {
       minH="100vh"
       fontFamily="sans-serif"
       pb="100px"
+      position="relative"
     >
       <Box as="header" w="100%" p={4} left="20px" position="relative">
         <Heading as="h1" size="lg" fontWeight="bold">
@@ -258,6 +267,7 @@ export default function Receipt() {
                 py={6}
                 px={10}
                 aria-label="Retake"
+                disabled={isUploading}
                 onClick={handleRetake}
               >
                 戻る
@@ -270,7 +280,7 @@ export default function Receipt() {
                 py={6}
                 px={10}
                 aria-label="Confirm"
-                loading={isUploading}
+                disabled={isUploading}
                 onClick={handleConfirm}
               >
                 進む
@@ -279,6 +289,24 @@ export default function Receipt() {
           </Box>
         )}
       </Flex>
+
+      {isUploading && (
+        <Box
+          position="fixed"
+          top={0}
+          left={0}
+          w="100vw"
+          h="100vh"
+          bg="rgba(0, 0, 0, 0.4)"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          zIndex={9999}
+        >
+          <Spinner size="xl" color="#ECA517FF" />
+        </Box>
+      )}
+
       <Footer />
     </Flex>
   );

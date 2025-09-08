@@ -54,32 +54,10 @@ export default function Settlment() {
 
   return (
     <Box left="20px" marginTop="20px" pb="100px">
-      <Flex
-        padding={4}
-        marginTop="10px"
-        left="30px"
-        justifyContent="space-between"
-        alignItems="center"
-      >
+      <Flex padding={4} marginTop="10px" left="30px" alignItems="center">
         <Text fontSize="20px" fontWeight="bold">
           請求登録
         </Text>
-
-        <Button
-          width="100px"
-          height="30px"
-          right="10px"
-          borderRadius="10px"
-          background="#EFB034FF"
-          color="#5D4108FF"
-          boxShadow="md"
-          _hover={{ bg: "#ECA517FF" }}
-          onClick={() => router.push(`/room/${group?.id}/receipt`)}
-        >
-          <Text fontSize="12px" fontWeight="bold">
-            レシート登録
-          </Text>
-        </Button>
       </Flex>
 
       <SimpleGrid padding={4} gap={4} minChildWidth="300px">
@@ -112,6 +90,25 @@ export default function Settlment() {
             </Card.Root>
           ))}
       </SimpleGrid>
+
+      <Button
+        position="fixed"
+        bottom="100px"
+        right="30px"
+        colorScheme="green"
+        borderRadius="full"
+        backgroundColor="#EFB034FF"
+        color="black"
+        width="80px"
+        height="80px"
+        onClick={() => router.push(`/room/${group?.id}/receipt`)}
+      >
+        <Text fontSize="12px" fontWeight="bold">
+          レシート
+          <br />
+          登録
+        </Text>
+      </Button>
 
       <Footer />
     </Box>

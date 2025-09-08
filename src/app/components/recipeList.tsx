@@ -76,7 +76,6 @@ export function RecipeList({ groups, userId }: RecipeListProps) {
               p={0}
               height="auto"
               flexDirection="column"
-              boxShadow="md"
               borderRadius="md"
               overflow="hidden"
               onClick={() => handleIntoRoom(group.id)}
@@ -95,10 +94,10 @@ export function RecipeList({ groups, userId }: RecipeListProps) {
               </Box>
 
               <Box p={2} width="100%">
-                <Text fontWeight="bold" textAlign="center">
+                <Text fontWeight="bold" textAlign="left">
                   {group.name} : {group.menu}
                 </Text>
-                <Flex justifyContent="center" mt={2}>
+                <Flex justifyContent="left" mt={2}>
                   {Array.from({ length: group.members?.length || 0 }).map(
                     (_, index) => (
                       <Image
@@ -125,8 +124,8 @@ export function RecipeList({ groups, userId }: RecipeListProps) {
         colorScheme="green"
         borderRadius="full"
         backgroundColor="#EFB034FF"
-        width="40px"
-        height="40px"
+        width="50px"
+        height="50px"
         onClick={() => setIsOpen(true)}
       >
         <IoIosAdd />

@@ -16,7 +16,6 @@ export function SearchInput() {
         placeholder="メニューを検索"
         paddingLeft="52px"
         paddingRight="20px"
-        fontFamily="Poppins"
         fontSize="18px"
         lineHeight="28px"
         fontWeight="400"
