@@ -4,26 +4,31 @@ export async function POST(req: NextRequest) {
   try {
     const cookie = req.headers.get("cookie") || "";
     const body = await req.json();
-    const res = await fetch("http://192.168.1.20/api/create-group", {
+
+    const res = await fetch("http://192.168.1.20/api/issue-signed-url", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Cookie: cookie, // 認証用
+        Cookie: cookie,
       },
       body: JSON.stringify(body),
     });
 
     if (!res.ok) {
-      const errorData = await res.json();
       return NextResponse.json(
-        { error: errorData.error },
-        { status: res.status },
+        { error: "Failed to get signed URL" },
+        { status: 500 },
       );
     }
 
-    const data = await res.json();
-    return NextResponse.json(data, { status: 201 });
-  } catch {
+    const {
+      upload_url: UploadURL,
+      file_key: FileKey,
+      receipt_id: ReceiptID,
+    } = await res.json();
+    return NextResponse.json({ UploadURL, FileKey, ReceiptID });
+  } catch (err) {
+    console.error(err);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

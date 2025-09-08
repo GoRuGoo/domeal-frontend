@@ -102,7 +102,7 @@ export default function DivisionWork() {
           color="#5D4108FF"
           boxShadow="md"
           _hover={{ bg: "#ECA517FF" }}
-          onClick={() => router.push(`/room/${group?.id}/receipt`)}
+          onClick={() => router.push(`/room/${group?.id}/settlement`)}
         >
           <Icon as={MdKeyboardArrowRight} />
         </Button>

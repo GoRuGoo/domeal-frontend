@@ -1,14 +1,22 @@
 "use client";
 
 import { Footer } from "@/app/components/footer";
+import { Group } from "@/app/type";
 import { Box, Button, Flex, Heading, Image, Text } from "@chakra-ui/react";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 export default function Receipt() {
+  const router = useRouter();
+  const pathname = usePathname();
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+
+  const [group, setGroup] = useState<Group>();
   const [isCameraActive, setIsCameraActive] = useState<boolean>(true);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
 
   const handleCapture = () => {
     const video = videoRef.current;
@@ -35,6 +43,59 @@ export default function Receipt() {
     setIsCameraActive(true);
   };
 
+  const handleConfirm = async () => {
+    if (!capturedImage || !group) return;
+    try {
+      setIsUploading(true);
+      const blob = await (await fetch(capturedImage)).blob();
+      const signedRes = await fetch("/api/issue-signed-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ group_id: String(group.id) }), // 必要に応じてパラメータ調整
+      });
+
+      if (!signedRes.ok) {
+        throw new Error("署名付きURLの発行に失敗しました");
+      }
+
+      const { UploadURL, FileKey, ReceiptID } = await signedRes.json();
+      console.log(UploadURL, FileKey, ReceiptID);
+
+      const uploadRes = await fetch(UploadURL, {
+        method: "PUT",
+        body: blob,
+        headers: { "Content-Type": "image/png" },
+      });
+
+      if (!uploadRes.ok) {
+        throw new Error("S3へのアップロードに失敗しました");
+      }
+
+      console.log("アップロード成功:", { FileKey, ReceiptID });
+
+      const ocrRes = await fetch("/api/confirm-upload-and-start-ocr", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ receipt_id: Number(ReceiptID) }),
+      });
+
+      if (!ocrRes.ok) {
+        throw new Error("OCRに失敗しました");
+      }
+
+      const { message, receipt_id, status } = await ocrRes.json();
+      console.log("message : status", message, status);
+
+      router.push(`/room/${group.id}/settlement`);
+    } catch (error) {
+      console.error("アップロード処理に失敗:", error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   useEffect(() => {
     const constraints: MediaStreamConstraints = {
       audio: false,
@@ -44,15 +105,20 @@ export default function Receipt() {
         frameRate: {
           max: 30,
         },
-        facingMode: {
-          exact: "environment",
-        },
+        // スマホでは以下のコメント外す
+        // facingMode: {
+        //   exact: "environment",
+        // },
       },
     };
 
     const openCamera = async () => {
       if (isCameraActive && videoRef.current) {
         try {
+          if (!navigator.mediaDevices?.getUserMedia) {
+            console.error("このブラウザはカメラに対応していません");
+            return;
+          }
           const stream = await navigator.mediaDevices.getUserMedia(constraints);
           streamRef.current = stream;
           videoRef.current.srcObject = stream;
@@ -70,6 +136,26 @@ export default function Receipt() {
     };
   }, [isCameraActive]);
 
+  useEffect(() => {
+    const fetchGroup = async () => {
+      try {
+        const res = await fetch("/api/groups");
+        const fetched = await res.json();
+        const data: Group[] = fetched.groups;
+
+        const segments = pathname.split("/").filter(Boolean);
+        const groupId = segments[1];
+
+        const matched = data.find((g) => g.id === Number(groupId));
+        setGroup(matched);
+      } catch (err) {
+        console.error("グループ取得失敗:", err);
+      }
+    };
+
+    fetchGroup();
+  }, [pathname]);
+
   return (
     <Flex
       direction="column"
@@ -77,6 +163,7 @@ export default function Receipt() {
       justify="space-between"
       minH="100vh"
       fontFamily="sans-serif"
+      pb="100px"
     >
       <Box as="header" w="100%" p={4} left="20px" position="relative">
         <Heading as="h1" size="lg" fontWeight="bold">
@@ -183,6 +270,8 @@ export default function Receipt() {
                 py={6}
                 px={10}
                 aria-label="Confirm"
+                loading={isUploading}
+                onClick={handleConfirm}
               >
                 進む
               </Button>
