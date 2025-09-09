@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Group, User } from "../type";
+import { Group, User, useUserStore } from "../type";
 import { Box } from "@chakra-ui/react";
 import { Header } from "./header";
 import { SearchInput } from "./searchInput";
@@ -13,7 +13,9 @@ interface HomeProps {
 }
 
 export default function Home({ user }: HomeProps) {
+  const setUser = useUserStore((s) => s.setUser);
   const [groups, setGroups] = useState<Group[]>([]);
+  const [filteredGroups, setFilteredGroups] = useState<Group[]>([]);
 
   useEffect(() => {
     const fetchGroups = async () => {
@@ -22,6 +24,7 @@ export default function Home({ user }: HomeProps) {
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         setGroups(data.groups); // data 内の groups 配列をセット
+        setFilteredGroups(data.groups);
       } catch (err) {
         console.error("グループ取得失敗:", err);
       }
@@ -34,9 +37,14 @@ export default function Home({ user }: HomeProps) {
     <Box>
       <Box pb="100px">
         <Header icon={user.picture} />
-        <SearchInput />
-        <RecipeList groups={groups} userId={user.id} />
-        <Footer />
+        <SearchInput groups={groups} onUpdate={setFilteredGroups} />
+        <RecipeList
+          groups={filteredGroups}
+          userId={user.id}
+          user={user}
+          setUser={setUser}
+        />
+        <Footer user={user} setUser={setUser} />
       </Box>
     </Box>
   );

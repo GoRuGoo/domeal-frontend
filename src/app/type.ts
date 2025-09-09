@@ -1,3 +1,5 @@
+import { create } from "zustand";
+
 interface Member {
   user_id: number;
   display_name: string;
@@ -14,17 +16,22 @@ export interface Group {
   members: Member[] | null;
 }
 
-export type RecipeListProps = {
-  groups: Group[];
-  userId: number;
-};
-
 // ユーザ情報の型
 export interface User {
   id: number;
   name: string;
   picture: string;
 }
+
+type UserStore = {
+  user: User | null;
+  setUser: (u: User) => void;
+};
+
+export const useUserStore = create<UserStore>((set) => ({
+  user: null,
+  setUser: (u) => set({ user: u }),
+}));
 
 // getServerSidePropsから返されるpropsの型
 export interface LoginStatusResponse {

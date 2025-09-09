@@ -1,7 +1,31 @@
-import { Input, InputGroup } from "@chakra-ui/react";
-import { HiMagnifyingGlass } from "react-icons/hi2";
+"use client";
 
-export function SearchInput() {
+import { Input, InputGroup } from "@chakra-ui/react";
+import { useState } from "react";
+import { HiMagnifyingGlass } from "react-icons/hi2";
+import { Group } from "../type";
+
+interface SearchInputProps {
+  groups: Group[];
+  onUpdate: (filterd: Group[]) => void;
+}
+
+export function SearchInput({ groups, onUpdate }: SearchInputProps) {
+  const [name, setName] = useState<string>("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
+    setName(input);
+
+    const filtered = input
+      ? groups.filter((group) =>
+          group.name.toLowerCase().includes(input.toLowerCase()),
+        )
+      : groups; // 空文字なら全件表示
+
+    onUpdate(filtered);
+  };
+
   return (
     <InputGroup
       startElement={<HiMagnifyingGlass />}
@@ -25,6 +49,8 @@ export function SearchInput() {
           boxShadow: "none",
           border: "none",
         }}
+        value={name}
+        onChange={handleChange}
       />
     </InputGroup>
   );

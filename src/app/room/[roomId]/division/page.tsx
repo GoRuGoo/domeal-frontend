@@ -10,174 +10,168 @@ import {
   Flex,
   Heading,
   Icon,
+  Image,
   Text,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { selectedDivisionType, WorkDivisionType } from "../../type";
+import { useState } from "react";
+import { RoleAssignType } from "../../type";
 import { MdKeyboardArrowRight } from "react-icons/md";
-import { usePathname } from "next/navigation";
-import { Group } from "@/app/type";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import { useRoleWebSocket } from "./useWs/useRoleWebSocket";
+import { useUserStore } from "@/app/type";
 
-const DIVISION: selectedDivisionType[] = ["shopping", "cooking", "cleaning"];
+const roles = ["shopping", "cooking", "cleaning"];
 
 export default function DivisionWork() {
   const router = useRouter();
   const pathname = usePathname();
+  const segments = pathname.split("/").filter(Boolean);
+  const groupId = segments[1];
+  const searchParams = useSearchParams();
+  const userId = searchParams.get("user_id");
 
-  const [group, setGroup] = useState<Group>();
-  const [divisionWork, setDivisionWork] = useState<
-    WorkDivisionType | undefined
-  >();
-  const [selectedDivision, setSelectedDivision] =
-    useState<selectedDivisionType>("shopping");
+  const setUser = useUserStore((s) => s.setUser);
+  const user = useUserStore((s) => s.user);
 
-  const handleCardClick = (tappedDivision: selectedDivisionType) => {
-    if (selectedDivision === tappedDivision) return;
-    if (!divisionWork) return;
-    const updatedDivision = {
-      ...divisionWork.division,
-      [selectedDivision]: divisionWork.division[selectedDivision] - 1,
-      [tappedDivision]: divisionWork.division[tappedDivision] + 1,
-    };
+  const [selectedRole, setSelectedRole] = useState<RoleAssignType>("");
+  const { roleState, connected, assignRole, completeRoles } = useRoleWebSocket(
+    Number(groupId),
+    Number(userId),
+  );
 
-    setDivisionWork({
-      ...divisionWork!,
-      division: updatedDivision,
-    });
-    setSelectedDivision(tappedDivision);
+  const handleSelect = (role: RoleAssignType) => {
+    setSelectedRole(role);
+    assignRole(role);
   };
 
-  useEffect(() => {
-    const fetchGroup = async () => {
-      try {
-        const res = await fetch("/api/groups");
-        const fetched = await res.json();
-        const data: Group[] = fetched.groups;
+  const handleComplete = () => {
+    completeRoles();
+    setUser(user!);
+    router.push(`/room/${groupId}/settlement`);
+  };
 
-        const segments = pathname.split("/").filter(Boolean);
-        const groupId = segments[1];
-
-        const matched = data.find((g) => g.id === Number(groupId));
-        setGroup(matched);
-
-        const division: WorkDivisionType = {
-          room: matched!,
-          division: {
-            shopping: matched!.members!.length,
-            cooking: 0,
-            cleaning: 0,
-          },
-        };
-        setDivisionWork(division);
-      } catch (err) {
-        console.error("グループ取得失敗:", err);
-      }
-    };
-
-    fetchGroup();
-  }, [pathname]);
-
-  if (!divisionWork) return;
+  if (!user) return;
 
   return (
     <Box height="100vh" overflowY="hidden">
-      <Flex padding={4} marginTop="10px" left="30px" alignItems="center">
+      <Flex padding={4} marginTop="10px" paddingLeft="8%" alignItems="center">
         <Text fontSize="20px" fontWeight="bold">
           役割分担
         </Text>
       </Flex>
-
-      <Flex
-        justifyContent="space-evenly"
-        direction="column"
-        alignItems="center"
-        height="70vh"
-        padding={2}
-        gap={4}
-      >
-        {DIVISION.map((divisionName) => (
-          <Button
-            key={divisionName}
-            variant="ghost"
-            width="90%"
-            height="30%"
-            display="flex"
-            flexDirection="column"
-            alignSelf="stretch"
-            padding={0}
-            mx="auto"
-            onClick={() => handleCardClick(divisionName)}
+      {!connected ? (
+        <Box
+          height="100vh"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Text fontWeight="bold">サーバーに接続中...</Text>
+        </Box>
+      ) : (
+        <Box>
+          <Flex
+            justifyContent="space-evenly"
+            direction="column"
+            alignItems="center"
+            height="70vh"
+            paddingX="8%"
+            paddingY={2}
+            gap={4}
           >
-            <Card.Root
-              width="100%"
-              height="100%"
-              position="relative"
-              borderRadius="6px"
-              backgroundColor={
-                selectedDivision === divisionName ? "#ECA517FF" : "#F3F4F6FF"
-              }
-              borderColor={
-                selectedDivision === divisionName ? "#ECA517FF" : "#F3F4F6FF"
-              }
-            >
-              <CardHeader position="absolute">
-                <Heading fontSize="20px" fontWeight="bold">
-                  {divisionName === "shopping"
-                    ? "買い出し"
-                    : divisionName === "cooking"
-                      ? "料理"
-                      : "片付け"}
-                </Heading>
-              </CardHeader>
-
-              <CardBody
-                position="absolute"
-                top="8px"
-                right="12px"
-                display="grid"
-                gridTemplateColumns="repeat(3, 24px)" // 横3列固定
-                gap="4px"
+            {roles.map((role) => (
+              <Button
+                key={role}
+                variant="ghost"
+                width="100%"
+                height="30%"
+                display="flex"
+                flexDirection="column"
+                alignSelf="stretch"
+                padding={0}
+                mx="auto"
+                onClick={() => handleSelect(role as RoleAssignType)}
               >
-                {Array.from({
-                  length:
-                    divisionName === "shopping"
-                      ? divisionWork.division.shopping
-                      : divisionName === "cooking"
-                        ? divisionWork.division.cooking
-                        : divisionWork.division.cleaning,
-                }).map((_, index) => (
-                  <Box
-                    key={index}
-                    width="24px"
-                    height="24px"
-                    borderRadius="full"
-                    bg="red.500"
-                  />
-                ))}
-              </CardBody>
-            </Card.Root>
+                <Card.Root
+                  width="100%"
+                  height="100%"
+                  position="relative"
+                  borderRadius="6px"
+                  backgroundColor={
+                    selectedRole === role ? "#ECA517FF" : "#F3F4F6FF"
+                  }
+                  borderColor={
+                    selectedRole === role ? "#ECA517FF" : "#F3F4F6FF"
+                  }
+                >
+                  <CardHeader position="absolute">
+                    <Heading fontSize="20px" fontWeight="bold">
+                      {role === "shopping"
+                        ? "買い出し"
+                        : role === "cooking"
+                          ? "料理"
+                          : "片付け"}
+                    </Heading>
+                  </CardHeader>
+
+                  <CardBody
+                    position="absolute"
+                    top="8px"
+                    right="12px"
+                    display="grid"
+                    gridTemplateColumns="repeat(3, 24px)" // 横3列固定
+                    gap="4px"
+                  >
+                    {Array.from({
+                      length:
+                        role === "shopping"
+                          ? (roleState?.roles["shopping"]?.length ?? 0)
+                          : role === "cooking"
+                            ? (roleState?.roles["cooking"]?.length ?? 0)
+                            : (roleState?.roles["cleaning"]?.length ?? 0),
+                    }).map((_, index) => (
+                      <Image
+                        key={index}
+                        src={
+                          role === "shopping"
+                            ? roleState?.roles["shopping"][index].icon_url
+                            : role === "cooking"
+                              ? roleState?.roles["cooking"][index].icon_url
+                              : roleState?.roles["cleaning"][index].icon_url
+                        }
+                        alt=""
+                        width="24px"
+                        height="24px"
+                        borderRadius="full"
+                        bg="red.500"
+                      />
+                    ))}
+                  </CardBody>
+                </Card.Root>
+              </Button>
+            ))}
+          </Flex>
+
+          <Button
+            position="fixed"
+            bottom="100px"
+            right="8%"
+            colorScheme="green"
+            borderRadius="full"
+            backgroundColor="#EFB034FF"
+            color="black"
+            width="60px"
+            height="60px"
+            _hover={{ bg: "#ECA517FF" }}
+            onClick={handleComplete}
+          >
+            <Icon as={MdKeyboardArrowRight} />
           </Button>
-        ))}
-      </Flex>
+        </Box>
+      )}
 
-      <Button
-        position="fixed"
-        bottom="100px"
-        right="30px"
-        colorScheme="green"
-        borderRadius="full"
-        backgroundColor="#EFB034FF"
-        color="black"
-        width="60px"
-        height="60px"
-        _hover={{ bg: "#ECA517FF" }}
-        onClick={() => router.push(`/room/${group?.id}/settlement`)}
-      >
-        <Icon as={MdKeyboardArrowRight} />
-      </Button>
-
-      <Footer />
+      <Footer user={user} setUser={setUser} />
     </Box>
   );
 }

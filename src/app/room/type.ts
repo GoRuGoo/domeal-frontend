@@ -9,7 +9,7 @@ export type WorkDivisionType = {
   };
 };
 
-export type selectedDivisionType = "shopping" | "cooking" | "cleaning";
+export type RoleAssignType = "shopping" | "cooking" | "cleaning" | "";
 
 export type ShoppingListType = {
   itemName: string;

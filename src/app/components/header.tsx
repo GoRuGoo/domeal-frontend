@@ -42,10 +42,9 @@ export function Header({ icon }: HeaderProps) {
           do!meal
         </Text>
 
-        {/* ベルアイコンと丸い形のグループ */}
+        {/* ベルアイコンとアイコンのグループ */}
         <Flex alignItems="center" gap={4}>
           <BsBell size="40px" />
-          {/* 丸い形のインジケータ */}
           <Image
             width="40px"
             height="40px"

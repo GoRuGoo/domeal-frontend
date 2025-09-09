@@ -1,7 +1,7 @@
 "use client";
 
 import { Footer } from "@/app/components/footer";
-import { Group } from "@/app/type";
+import { useUserStore } from "@/app/type";
 import {
   Box,
   Button,
@@ -17,11 +17,15 @@ import { useEffect, useRef, useState } from "react";
 export default function Receipt() {
   const router = useRouter();
   const pathname = usePathname();
+  const segments = pathname.split("/").filter(Boolean);
+  const groupId = segments[1];
+
+  const setUser = useUserStore((s) => s.setUser);
+  const user = useUserStore((s) => s.user);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const [group, setGroup] = useState<Group>();
   const [isCameraActive, setIsCameraActive] = useState<boolean>(true);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
@@ -52,7 +56,7 @@ export default function Receipt() {
   };
 
   const handleConfirm = async () => {
-    if (!capturedImage || !group) return;
+    if (!capturedImage) return;
     try {
       setIsUploading(true);
       const blob = await (await fetch(capturedImage)).blob();
@@ -60,7 +64,7 @@ export default function Receipt() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ group_id: String(group.id) }), // 必要に応じてパラメータ調整
+        body: JSON.stringify({ group_id: String(groupId) }), // 必要に応じてパラメータ調整
       });
 
       if (!signedRes.ok) {
@@ -96,7 +100,8 @@ export default function Receipt() {
       const { message, receipt_id, status } = await ocrRes.json();
       console.log("message : status", message, status);
 
-      router.push(`/room/${group.id}/settlement`);
+      setUser(user!);
+      router.push(`/room/${groupId}/settlement`);
     } catch (error) {
       console.error("アップロード処理に失敗:", error);
     } finally {
@@ -143,26 +148,6 @@ export default function Receipt() {
       }
     };
   }, [isCameraActive]);
-
-  useEffect(() => {
-    const fetchGroup = async () => {
-      try {
-        const res = await fetch("/api/groups");
-        const fetched = await res.json();
-        const data: Group[] = fetched.groups;
-
-        const segments = pathname.split("/").filter(Boolean);
-        const groupId = segments[1];
-
-        const matched = data.find((g) => g.id === Number(groupId));
-        setGroup(matched);
-      } catch (err) {
-        console.error("グループ取得失敗:", err);
-      }
-    };
-
-    fetchGroup();
-  }, [pathname]);
 
   return (
     <Flex
@@ -307,7 +292,7 @@ export default function Receipt() {
         </Box>
       )}
 
-      <Footer />
+      <Footer user={user!} setUser={setUser} />
     </Flex>
   );
 }

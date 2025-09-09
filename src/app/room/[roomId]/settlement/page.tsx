@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ShoppingListType } from "../../type";
 import {
   Box,
@@ -14,13 +14,17 @@ import {
 } from "@chakra-ui/react";
 import { Footer } from "@/app/components/footer";
 import { usePathname, useRouter } from "next/navigation";
-import { Group } from "@/app/type";
+import { useUserStore } from "@/app/type";
 
 export default function Settlment() {
   const router = useRouter();
   const pathname = usePathname();
+  const segments = pathname.split("/").filter(Boolean);
+  const groupId = segments[1];
 
-  const [group, setGroup] = useState<Group>();
+  const setUser = useUserStore((s) => s.setUser);
+  const user = useUserStore((s) => s.user);
+
   const [items, setItems] = useState<ShoppingListType[]>();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
@@ -32,25 +36,10 @@ export default function Settlment() {
     setSelectedItems(copiedItem);
   };
 
-  useEffect(() => {
-    const fetchGroup = async () => {
-      try {
-        const res = await fetch("/api/groups");
-        const fetched = await res.json();
-        const data: Group[] = fetched.groups;
-
-        const segments = pathname.split("/").filter(Boolean);
-        const groupId = segments[1];
-
-        const matched = data.find((g) => g.id === Number(groupId));
-        setGroup(matched);
-      } catch (err) {
-        console.error("グループ取得失敗:", err);
-      }
-    };
-
-    fetchGroup();
-  }, [pathname]);
+  const handleRegisterReceipt = () => {
+    setUser(user!);
+    router.push(`/room/${groupId}/receipt`);
+  };
 
   return (
     <Box left="20px" marginTop="20px" pb="100px">
@@ -101,7 +90,7 @@ export default function Settlment() {
         color="black"
         width="80px"
         height="80px"
-        onClick={() => router.push(`/room/${group?.id}/receipt`)}
+        onClick={handleRegisterReceipt}
       >
         <Text fontSize="12px" fontWeight="bold">
           レシート
@@ -110,7 +99,7 @@ export default function Settlment() {
         </Text>
       </Button>
 
-      <Footer />
+      <Footer user={user!} setUser={setUser} />
     </Box>
   );
 }

@@ -11,19 +11,48 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { IoIosAdd } from "react-icons/io";
-import { RecipeListProps } from "../type";
+import { Group, User } from "../type";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { SelectPhoto } from "./selectPhoto";
 
-export function RecipeList({ groups, userId }: RecipeListProps) {
+interface RecipeListProps {
+  groups: Group[];
+  userId: number;
+  user: User;
+  setUser: (u: User) => void;
+}
+
+export function RecipeList({ groups, userId, user, setUser }: RecipeListProps) {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [name, setName] = useState("");
   const [menu, setMenu] = useState("");
-  const url = "https://"; // TODO: 写真選ぶ実装
+  const [isPhotoOpen, setIsPhotoOpen] = useState<boolean>(false);
+  const [photo, setPhoto] = useState<string>("");
 
   const handleIntoRoom = (id: number) => {
-    router.push(`/room/${id}/division`);
+    const joinGroup = async () => {
+      try {
+        const res = await fetch("/api/join-group", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ group_id: id }),
+        });
+
+        const data = await res.json();
+
+        // if (!res.ok) {
+        //   throw new Error(data.error || "Failed to join group");
+        // }
+        setUser(user);
+        router.push(`/room/${id}/division?user_id=${userId}`);
+      } catch (error) {
+        console.error("Failed to join a group:", error);
+      }
+    };
+
+    joinGroup();
   };
 
   const handleCreate = () => {
@@ -35,7 +64,7 @@ export function RecipeList({ groups, userId }: RecipeListProps) {
             "Content-Type": "application/json",
           },
           credentials: "include",
-          body: JSON.stringify({ name, menu, url, userId }),
+          body: JSON.stringify({ name, menu, photo, userId }),
         });
 
         if (!res.ok) {
@@ -52,12 +81,17 @@ export function RecipeList({ groups, userId }: RecipeListProps) {
     };
 
     createGroup();
+    setIsOpen(false);
   };
 
   const handleClose = () => {
     setName("");
     setMenu("");
     setIsOpen(false);
+  };
+
+  const handlePhotoSearch = () => {
+    setIsPhotoOpen(true);
   };
 
   return (
@@ -167,6 +201,7 @@ export function RecipeList({ groups, userId }: RecipeListProps) {
                 value={menu}
                 onChange={(e) => setMenu(e.target.value)}
               />
+              <Button onClick={handlePhotoSearch}>画像を検索</Button>
             </Stack>
 
             <Flex justifyContent="flex-end" mt={4} gap={2}>
@@ -178,6 +213,27 @@ export function RecipeList({ groups, userId }: RecipeListProps) {
               </Button>
             </Flex>
           </Box>
+        </Box>
+      )}
+
+      {isPhotoOpen && (
+        <Box
+          position="fixed"
+          top={0}
+          left={0}
+          width="100vw"
+          height="100vh"
+          bg="blackAlpha.700"
+          zIndex={1100} // isOpen より上
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <SelectPhoto
+            query={menu}
+            onClose={setIsPhotoOpen}
+            onSelect={setPhoto}
+          />
         </Box>
       )}
     </Box>
