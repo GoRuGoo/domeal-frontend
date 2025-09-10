@@ -13,13 +13,15 @@ import {
   Image,
   Text,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RoleAssignType } from "../../type";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useRoleWebSocket } from "./useWs/useRoleWebSocket";
 import { useUserStore } from "@/app/type";
+
+type FlowMessage = string;
 
 const roles = ["shopping", "cooking", "cleaning"];
 
@@ -34,6 +36,7 @@ export default function DivisionWork() {
   const setUser = useUserStore((s) => s.setUser);
   const user = useUserStore((s) => s.user);
 
+  const [messages, setMessages] = useState<FlowMessage>();
   const [selectedRole, setSelectedRole] = useState<RoleAssignType>("");
   const { roleState, connected, assignRole, completeRoles } = useRoleWebSocket(
     Number(groupId),
@@ -47,9 +50,34 @@ export default function DivisionWork() {
 
   const handleComplete = () => {
     completeRoles();
-    setUser(user!);
-    router.push(`/room/${groupId}/settlement`);
   };
+
+  useEffect(() => {
+    const url = `/api/subscribe-flow?group_id=${groupId}`;
+    const eventSource = new EventSource(url);
+
+    eventSource.onmessage = (event) => {
+      console.log("SSE:", event.data);
+      setMessages(event.data);
+    };
+
+    eventSource.onerror = (error) => {
+      console.error("SSE error: ", error);
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [groupId]);
+
+  useEffect(() => {
+    if (messages === "move_to_waiting_or_upload_receipt") {
+      router.push(
+        `/room/${groupId}/receipt?user_id=${userId}&role=${selectedRole}`,
+      );
+    }
+  }, [groupId, router, messages, userId, selectedRole]);
 
   if (!user) return;
 

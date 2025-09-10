@@ -11,14 +11,18 @@ import {
   Spinner,
   Text,
 } from "@chakra-ui/react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 export default function Receipt() {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const segments = pathname.split("/").filter(Boolean);
   const groupId = segments[1];
+  const userId = searchParams.get("user_id");
+  const myRole = searchParams.get("role");
+  console.log(userId, myRole);
 
   const setUser = useUserStore((s) => s.setUser);
   const user = useUserStore((s) => s.user);
@@ -109,6 +113,7 @@ export default function Receipt() {
   };
 
   useEffect(() => {
+    if (myRole !== "shopping") return;
     const constraints: MediaStreamConstraints = {
       audio: false,
       video: {
@@ -146,7 +151,27 @@ export default function Receipt() {
         streamRef.current.getTracks().forEach((track) => track.stop());
       }
     };
-  }, [isCameraActive]);
+  }, [isCameraActive, myRole]);
+
+  useEffect(() => {
+    const url = `/api/subscribe-flow?group_id=${groupId}`;
+    const eventSource = new EventSource(url);
+
+    eventSource.onmessage = (event) => {
+      if (event.data === "move_to_choice_items") {
+        router.push(`/room/${groupId}/settlement`);
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      console.error("SEE error:", error);
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [groupId, router]);
 
   return (
     <Flex
@@ -160,121 +185,150 @@ export default function Receipt() {
     >
       <Box as="header" w="100%" p={4} left="20px" position="relative">
         <Heading as="h1" size="lg" fontWeight="bold">
-          レシート登録
+          {myRole === "shopping" ? "レシート登録" : "役割選択"}
         </Heading>
       </Box>
 
       <Flex
         direction="column"
         align="center"
-        justify="start"
+        justify="center"
         flexGrow={1}
         w="100%"
         p={4}
-        gap={4}
       >
-        <Box
-          border="2px dashed"
-          borderColor="#ECA517FF"
-          p={2}
-          borderRadius="md"
-          w={{ base: "90%", sm: "80%", md: "60%" }}
-          maxW="md"
-          position="relative"
-          overflow="hidden"
-          _after={{
-            content: '""',
-            display: "block",
-            paddingBottom: "130%",
-          }}
-        >
-          {capturedImage ? (
-            <Image
-              src={capturedImage}
-              alt="Captured receipt"
-              style={{
-                width: "calc(100% - 16px)",
-                height: "calc(100% - 16px)",
-                objectFit: "cover",
-                position: "absolute",
-                top: "8px",
-                left: "8px",
-              }}
-            />
-          ) : (
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              style={{
-                width: "calc(100% - 24px)", // 例: 左右に24pxずつのマージン
-                height: "calc(100% - 24px)", // 例: 上下に24pxずつのマージン
-                objectFit: "cover",
-                position: "absolute",
-                top: "12px",
-                left: "12px",
-              }}
-            />
-          )}
-        </Box>
-
-        {isCameraActive ? (
-          <Button
-            bg="#ECA517FF"
-            borderRadius="full"
-            boxSize="60px"
-            aria-label="Take Photo"
-            onClick={handleCapture}
-          />
-        ) : (
-          <Box
-            bg="white"
+        {myRole === "shopping" ? (
+          <Flex
+            direction="column"
+            align="center"
+            justify="start"
+            flexGrow={1}
+            w="100%"
             p={4}
-            w={{ base: "90%", sm: "80%", md: "60%" }}
-            borderRadius="xl"
-            boxShadow="lg"
-            border="2px solid"
-            mt={4}
-            textAlign="center"
-            borderColor="#ECA517FF"
+            gap={4}
           >
-            <Text mb={4} fontSize="lg" fontWeight="normal">
-              この内容で登録しますか？
-            </Text>
+            <Box
+              border="2px dashed"
+              borderColor="#ECA517FF"
+              p={2}
+              borderRadius="md"
+              w={{ base: "90%", sm: "80%", md: "60%" }}
+              maxW="md"
+              position="relative"
+              overflow="hidden"
+              _after={{
+                content: '""',
+                display: "block",
+                paddingBottom: "130%",
+              }}
+            >
+              {capturedImage ? (
+                <Image
+                  src={capturedImage}
+                  alt="Captured receipt"
+                  style={{
+                    width: "calc(100% - 16px)",
+                    height: "calc(100% - 16px)",
+                    objectFit: "cover",
+                    position: "absolute",
+                    top: "8px",
+                    left: "8px",
+                  }}
+                />
+              ) : (
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  style={{
+                    width: "calc(100% - 24px)",
+                    height: "calc(100% - 24px)",
+                    objectFit: "cover",
+                    position: "absolute",
+                    top: "12px",
+                    left: "12px",
+                  }}
+                />
+              )}
+            </Box>
 
-            <Flex gap={4} justifyContent="center">
-              <Button
-                bg="#DEE1E6FF"
-                color="black"
-                _hover={{ bg: "gray.400" }}
-                borderRadius="lg"
-                py={6}
-                px={10}
-                aria-label="Retake"
-                disabled={isUploading}
-                onClick={handleRetake}
-              >
-                戻る
-              </Button>
+            {isCameraActive ? (
               <Button
                 bg="#ECA517FF"
-                color="white"
-                _hover={{ bg: "orange.500" }}
-                borderRadius="lg"
-                py={6}
-                px={10}
-                aria-label="Confirm"
-                disabled={isUploading}
-                onClick={handleConfirm}
+                borderRadius="full"
+                boxSize="60px"
+                aria-label="Take Photo"
+                onClick={handleCapture}
+              />
+            ) : (
+              <Box
+                bg="white"
+                p={4}
+                w={{ base: "90%", sm: "80%", md: "60%" }}
+                borderRadius="xl"
+                boxShadow="lg"
+                border="2px solid"
+                mt={4}
+                textAlign="center"
+                borderColor="#ECA517FF"
               >
-                進む
-              </Button>
-            </Flex>
+                <Text mb={4} fontSize="lg" fontWeight="normal">
+                  この内容で登録しますか？
+                </Text>
+
+                <Flex gap={4} justifyContent="center">
+                  <Button
+                    bg="#DEE1E6FF"
+                    color="black"
+                    _hover={{ bg: "gray.400" }}
+                    borderRadius="lg"
+                    py={6}
+                    px={10}
+                    aria-label="Retake"
+                    disabled={isUploading}
+                    onClick={handleRetake}
+                  >
+                    戻る
+                  </Button>
+                  <Button
+                    bg="#ECA517FF"
+                    color="white"
+                    _hover={{ bg: "orange.500" }}
+                    borderRadius="lg"
+                    py={6}
+                    px={10}
+                    aria-label="Confirm"
+                    disabled={isUploading}
+                    onClick={handleConfirm}
+                  >
+                    進む
+                  </Button>
+                </Flex>
+              </Box>
+            )}
+          </Flex>
+        ) : (
+          <Box
+            bg="#ECA517FF"
+            color="white"
+            p={10}
+            borderRadius="xl"
+            boxShadow="lg"
+            width="60vh"
+            height="70vh"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            textAlign="center"
+          >
+            <Text fontSize="2xl" fontWeight="bold">
+              {myRole === "cooking" ? "調理" : "片付け"}
+            </Text>
           </Box>
         )}
       </Flex>
 
-      {isUploading && (
+      {isUploading && myRole === "shopping" && (
         <Box
           position="fixed"
           top={0}
