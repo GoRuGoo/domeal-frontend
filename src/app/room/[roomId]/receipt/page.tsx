@@ -72,7 +72,6 @@ export default function Receipt() {
       }
 
       const { UploadURL, FileKey, ReceiptID } = await signedRes.json();
-      console.log(UploadURL, FileKey, ReceiptID);
 
       const uploadRes = await fetch(UploadURL, {
         method: "PUT",

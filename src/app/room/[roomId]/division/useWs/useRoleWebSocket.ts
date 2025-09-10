@@ -51,7 +51,7 @@ export const useRoleWebSocket = (groupId: number, userId: number) => {
 
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const ws = new WebSocket(
-      `${protocol}://192.168.1.20/ws/role-division?group_id=${groupId}`,
+      `${protocol}://localhost/ws/role-division?group_id=${groupId}`,
     );
     wsRef.current = ws;
 

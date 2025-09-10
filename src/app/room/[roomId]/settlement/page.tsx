@@ -1,39 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { ShoppingListType } from "../../type";
-import {
-  Box,
-  Button,
-  Card,
-  CardBody,
-  Flex,
-  Heading,
-  SimpleGrid,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Image, SimpleGrid, Text } from "@chakra-ui/react";
 import { Footer } from "@/app/components/footer";
 import { usePathname, useRouter } from "next/navigation";
 import { useUserStore } from "@/app/type";
+import { useItemWebSocket } from "./useWs/useItemWebSocket";
 
 export default function Settlment() {
   const router = useRouter();
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
   const groupId = segments[1];
+  const receiptId = 1;
 
   const setUser = useUserStore((s) => s.setUser);
   const user = useUserStore((s) => s.user);
 
-  const [items, setItems] = useState<ShoppingListType[]>();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const { items, connected, chooseItem, removeItem } = useItemWebSocket(
+    Number(groupId),
+  );
 
-  const handleCardClick = (product: string) => {
-    const copiedItem = [...selectedItems];
-    const indexOfItem = copiedItem.indexOf(product);
-    if (indexOfItem > -1) copiedItem.splice(indexOfItem, 1);
-    else copiedItem.push(product);
-    setSelectedItems(copiedItem);
+  const handleItemClick = (id: number, item: string) => {
+    const tmpItems = [...selectedItems];
+    const indexOfItem = tmpItems.indexOf(item);
+    if (indexOfItem > -1) {
+      removeItem(receiptId, id);
+      tmpItems.splice(indexOfItem, 1);
+    } else {
+      chooseItem(receiptId, id);
+      tmpItems.push(item);
+    }
+    setSelectedItems(tmpItems);
   };
 
   const handleRegisterReceipt = () => {
@@ -49,36 +48,83 @@ export default function Settlment() {
         </Text>
       </Flex>
 
-      <SimpleGrid padding={4} gap={4} minChildWidth="300px">
-        {items &&
-          items.map((item, index) => (
-            <Card.Root
-              key={index}
-              direction={{ base: "column", sm: "row" }}
-              overflow="hidden"
-              variant="outline"
-              borderColor="#EFB034FF"
-              backgroundColor={
-                selectedItems.includes(item.itemName) ? "#EFB034FF" : ""
-              }
-              boxShadow="md"
-              onClick={() => handleCardClick(item.itemName)}
-            >
-              <CardBody>
+      {!connected ? (
+        <Box
+          height="100vh"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Text fontWeight="bold">サーバーに接続中...</Text>
+        </Box>
+      ) : (
+        <SimpleGrid columns={2} gap={8} padding={4}>
+          {items &&
+            items.map((item) => (
+              <Button
+                key={item.id}
+                variant="ghost"
+                p={0}
+                height="auto"
+                flexDirection="column"
+                borderRadius="md"
+                overflow="hidden"
+                borderWidth={selectedItems.includes(item.name) ? "3px" : "0px"}
+                borderColor={
+                  selectedItems.includes(item.name)
+                    ? "#ECA517FF"
+                    : "transparent"
+                }
+                onClick={() => {
+                  handleItemClick(item.id, item.name);
+                }}
+              >
                 <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
+                  width="100%"
+                  pb="100%"
+                  position="relative"
+                  borderColor={
+                    selectedItems.includes(item.name)
+                      ? "#ECA517FF"
+                      : "transparent"
+                  }
                 >
-                  <Text fontSize="xl" fontWeight="bold">
-                    {item.itemName}
-                  </Text>
-                  <Heading size="md">{item.price}円</Heading>
+                  <Image
+                    key={item.id}
+                    src="https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg.webp"
+                    alt=""
+                    position="absolute"
+                    top="0"
+                    left="0"
+                    width="100%"
+                    height="100%"
+                    objectFit="cover"
+                  />
                 </Box>
-              </CardBody>
-            </Card.Root>
-          ))}
-      </SimpleGrid>
+                <Box p={2} width="100%" minHeight="80px">
+                  <Text fontWeight="bold" textAlign="left">
+                    {item.name}
+                  </Text>
+                  <Flex justifyContent="left" mt={2}>
+                    {Array.from({
+                      length: item.selected_users?.length || 0,
+                    }).map((_, index) => (
+                      <Image
+                        key={index}
+                        src={item.selected_users[index].icon_url}
+                        alt=""
+                        width="30px"
+                        height="30px"
+                        borderRadius="full"
+                        mx="2px"
+                      />
+                    ))}
+                  </Flex>
+                </Box>
+              </Button>
+            ))}
+        </SimpleGrid>
+      )}
 
       <Button
         position="fixed"

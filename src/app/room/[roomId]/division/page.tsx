@@ -60,6 +60,7 @@ export default function DivisionWork() {
           役割分担
         </Text>
       </Flex>
+
       {!connected ? (
         <Box
           height="100vh"

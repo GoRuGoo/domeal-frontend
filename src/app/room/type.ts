@@ -10,10 +10,3 @@ export type WorkDivisionType = {
 };
 
 export type RoleAssignType = "shopping" | "cooking" | "cleaning" | "";
-
-export type ShoppingListType = {
-  itemName: string;
-  itemPhoto: string;
-  price: number;
-  buyer: string[];
-};

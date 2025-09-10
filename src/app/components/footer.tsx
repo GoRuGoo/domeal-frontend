@@ -20,9 +20,9 @@ export function Footer({ user, setUser }: FooterProps) {
       as="footer"
       width="100%"
       height="70px"
+      backgroundColor="white"
       py={4}
       px={6}
-      mb={2}
       position="fixed"
       bottom="0"
       zIndex="10"
@@ -36,7 +36,7 @@ export function Footer({ user, setUser }: FooterProps) {
         {/* Home メニュー */}
         <Button
           variant="ghost"
-          bg="transparent"
+          bg="white"
           _hover={{ bg: "transparent" }}
           _active={{ bg: "transparent" }}
           p={0}
@@ -56,7 +56,7 @@ export function Footer({ user, setUser }: FooterProps) {
         {/* Profile メニュー */}
         <Button
           variant="ghost"
-          bg="transparent"
+          bg="white"
           _hover={{ bg: "transparent" }}
           _active={{ bg: "transparent" }}
           p={0}
@@ -76,7 +76,7 @@ export function Footer({ user, setUser }: FooterProps) {
         {/* Profile メニュー */}
         <Button
           variant="ghost"
-          bg="transparent"
+          bg="white"
           _hover={{ bg: "transparent" }}
           _active={{ bg: "transparent" }}
           p={0}
