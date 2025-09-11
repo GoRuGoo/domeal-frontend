@@ -33,6 +33,7 @@ export default function RootLayout({
       <body
         suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        style={{ transform: "scaleX(0.9)", transformOrigin: "center" }}
       >
         <Provider>{children}</Provider>
       </body>

@@ -36,6 +36,7 @@ export default function DivisionWork() {
   const setUser = useUserStore((s) => s.setUser);
   const user = useUserStore((s) => s.user);
 
+  const [isClicked, setIsClicked] = useState<boolean>(false);
   const [messages, setMessages] = useState<FlowMessage>();
   const [selectedRole, setSelectedRole] = useState<RoleAssignType>("");
   const { roleState, connected, assignRole, completeRoles } = useRoleWebSocket(
@@ -49,6 +50,7 @@ export default function DivisionWork() {
   };
 
   const handleComplete = () => {
+    setIsClicked(true);
     completeRoles();
   };
 
@@ -188,7 +190,7 @@ export default function DivisionWork() {
             right="8%"
             colorScheme="green"
             borderRadius="full"
-            backgroundColor="#EFB034FF"
+            backgroundColor={isClicked ? "#EFB034FF" : "gray.100"}
             color="black"
             width="60px"
             height="60px"
