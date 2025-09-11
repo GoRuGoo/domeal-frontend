@@ -13,6 +13,7 @@ interface HomeProps {
 }
 
 export default function Home({ user }: HomeProps) {
+  console.log("hello", user);
   const setUser = useUserStore((s) => s.setUser);
   const [groups, setGroups] = useState<Group[]>([]);
   const [filteredGroups, setFilteredGroups] = useState<Group[]>([]);

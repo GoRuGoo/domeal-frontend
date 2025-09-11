@@ -100,7 +100,7 @@ export default function Receipt() {
         throw new Error("OCRに失敗しました");
       }
 
-      const { message, receipt_id, status } = await ocrRes.json();
+      const { message, status } = await ocrRes.json();
       console.log("message : status", message, status);
 
       setUser(user!);
