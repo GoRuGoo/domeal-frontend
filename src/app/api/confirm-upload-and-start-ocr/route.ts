@@ -5,8 +5,9 @@ export async function POST(req: NextRequest) {
     const cookie = req.headers.get("cookie") || "";
     const body = await req.json();
 
+    const ENDPOINT_URL = process.env.ENDPOINT_URL;
     const res = await fetch(
-      "http://192.168.1.20/api/confirm-upload-and-start-ocr",
+      `${ENDPOINT_URL}/api/confirm-upload-and-start-ocr`,
       {
         method: "POST",
         headers: {

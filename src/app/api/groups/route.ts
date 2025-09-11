@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const cookie = req.headers.get("cookie") || "";
-  const res = await fetch("http://192.168.1.20/api/groups", {
+  const ENDPOINT_URL = process.env.ENDPOINT_URL;
+  const res = await fetch(`${ENDPOINT_URL}/api/groups`, {
     headers: {
       Cookie: cookie,
     },

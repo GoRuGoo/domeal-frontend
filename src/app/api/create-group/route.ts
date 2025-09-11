@@ -4,7 +4,8 @@ export async function POST(req: NextRequest) {
   try {
     const cookie = req.headers.get("cookie") || "";
     const body = await req.json();
-    const res = await fetch("http://192.168.1.20/api/create-group", {
+    const ENDPOINT_URL = process.env.ENDPOINT_URL;
+    const res = await fetch(`${ENDPOINT_URL}/api/create-group`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

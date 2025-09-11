@@ -5,7 +5,8 @@ export async function POST(req: NextRequest) {
     const cookie = req.headers.get("cookie") || "";
     const body = await req.json();
 
-    const res = await fetch("http://192.168.1.20/api/issue-signed-url", {
+    const ENDPOINT_URL = process.env.ENDPOINT_URL;
+    const res = await fetch(`${ENDPOINT_URL}/api/issue-signed-url`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
