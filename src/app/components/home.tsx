@@ -18,6 +18,14 @@ export default function Home({ user }: HomeProps) {
   const [filteredGroups, setFilteredGroups] = useState<Group[]>([]);
 
   useEffect(() => {
+    if (user) {
+      document.cookie = `user_id=${user.id}; path=/`;
+      document.cookie = `user_name=${user.name}; path=/`;
+      document.cookie = `user_picture=${user.picture}; path=/`;
+    }
+  }, [user]);
+
+  useEffect(() => {
     const fetchGroups = async () => {
       try {
         const res = await fetch("/api/groups"); // これだけでOK

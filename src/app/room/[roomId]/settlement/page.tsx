@@ -18,9 +18,14 @@ export default function Settlment() {
   const user = useUserStore((s) => s.user);
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const { items, completed, connected, chooseItem, removeItem, completeSelection } = useItemWebSocket(
-    Number(groupId),
-  );
+  const {
+    items,
+    completed,
+    connected,
+    chooseItem,
+    removeItem,
+    completeSelection,
+  } = useItemWebSocket(Number(groupId));
 
   const handleItemClick = (id: number, item: string) => {
     const tmpItems = [...selectedItems];

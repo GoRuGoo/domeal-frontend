@@ -74,7 +74,7 @@ export function RecipeList({ groups, userId, user, setUser }: RecipeListProps) {
           throw new Error(errData.error);
         }
 
-        const newGroup: Group = await res.json();  
+        const newGroup: Group = await res.json();
         setReceivedGroups([...(groups || []), newGroup]);
       } catch (error) {
         console.error("failed to create", error);
@@ -95,7 +95,7 @@ export function RecipeList({ groups, userId, user, setUser }: RecipeListProps) {
   const handlePhotoSearch = () => {
     setIsPhotoOpen(true);
   };
-  
+
   useEffect(() => {
     setReceivedGroups(groups);
   }, [groups]);

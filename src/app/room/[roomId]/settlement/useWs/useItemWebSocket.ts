@@ -41,13 +41,13 @@ export const useItemWebSocket = (groupId: number) => {
   };
 
   const completeSelection = () => {
-   if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
     wsRef.current.send(
       JSON.stringify({
         action: "complete",
       }),
-    ); 
-  }
+    );
+  };
 
   useEffect(() => {
     if (!groupId) return;
