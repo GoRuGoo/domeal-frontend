@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { IoIosAdd } from "react-icons/io";
 import { Group, User } from "../type";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { SelectPhoto } from "./selectPhoto";
 
@@ -30,6 +30,8 @@ export function RecipeList({ groups, userId, user, setUser }: RecipeListProps) {
   const [menu, setMenu] = useState("");
   const [isPhotoOpen, setIsPhotoOpen] = useState<boolean>(false);
   const [photo, setPhoto] = useState<string>("");
+
+  const [receivedGroups, setReceivedGroups] = useState<Group[]>(groups);
 
   const handleIntoRoom = (id: number) => {
     const joinGroup = async () => {
@@ -72,8 +74,8 @@ export function RecipeList({ groups, userId, user, setUser }: RecipeListProps) {
           throw new Error(errData.error);
         }
 
-        const newGroup = await res.json();
-        console.log("successed", newGroup);
+        const newGroup: Group = await res.json();  
+        setReceivedGroups([...(groups || []), newGroup]);
       } catch (error) {
         console.error("failed to create", error);
         return null;
@@ -93,6 +95,10 @@ export function RecipeList({ groups, userId, user, setUser }: RecipeListProps) {
   const handlePhotoSearch = () => {
     setIsPhotoOpen(true);
   };
+  
+  useEffect(() => {
+    setReceivedGroups(groups);
+  }, [groups]);
 
   return (
     <Box left="20px" marginTop="20px">
@@ -102,8 +108,8 @@ export function RecipeList({ groups, userId, user, setUser }: RecipeListProps) {
         </Text>
       </Box>
       <SimpleGrid columns={2} gap={8} padding={4}>
-        {groups &&
-          groups.map((group) => (
+        {receivedGroups &&
+          receivedGroups.map((group) => (
             <Button
               key={group.id}
               variant="ghost"
@@ -131,7 +137,7 @@ export function RecipeList({ groups, userId, user, setUser }: RecipeListProps) {
                 <Text fontWeight="bold" textAlign="left">
                   {group.name} : {group.menu}
                 </Text>
-                <Flex justifyContent="left" mt={2}>
+                <Flex justifyContent="left" mt={2} minHeight="40px">
                   {Array.from({ length: group.members?.length || 0 }).map(
                     (_, index) => (
                       <Image

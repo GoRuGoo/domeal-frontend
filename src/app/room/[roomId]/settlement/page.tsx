@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Button, Flex, Image, SimpleGrid, Text } from "@chakra-ui/react";
 import { Footer } from "@/app/components/footer";
 import { usePathname, useRouter } from "next/navigation";
@@ -18,7 +18,7 @@ export default function Settlment() {
   const user = useUserStore((s) => s.user);
 
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const { items, connected, chooseItem, removeItem } = useItemWebSocket(
+  const { items, completed, connected, chooseItem, removeItem, completeSelection } = useItemWebSocket(
     Number(groupId),
   );
 
@@ -35,10 +35,11 @@ export default function Settlment() {
     setSelectedItems(tmpItems);
   };
 
-  const handleRegisterReceipt = () => {
-    setUser(user!);
-    router.push(`/room/${groupId}/receipt`);
-  };
+  useEffect(() => {
+    if (completed) {
+      router.push("/");
+    }
+  }, [completed, router]);
 
   return (
     <Box left="20px" marginTop="20px" pb="100px">
@@ -132,16 +133,16 @@ export default function Settlment() {
         right="30px"
         colorScheme="green"
         borderRadius="full"
-        backgroundColor="#EFB034FF"
+        backgroundColor={completed ? "#EFB034FF" : "gray.100"}
         color="black"
         width="80px"
         height="80px"
-        onClick={handleRegisterReceipt}
+        onClick={completeSelection}
       >
         <Text fontSize="12px" fontWeight="bold">
-          レシート
+          選択
           <br />
-          登録
+          完了
         </Text>
       </Button>
 

@@ -16,6 +16,7 @@ export const useItemWebSocket = (groupId: number) => {
   const wsRef = useRef<WebSocket | null>(null);
   const [items, setItems] = useState<ItemWithUsers[]>([]);
   const [connected, setConnected] = useState<boolean>(false);
+  const [completed, setCompleted] = useState<boolean>(false);
 
   const chooseItem = (receiptId: number, itemId: number) => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
@@ -38,6 +39,15 @@ export const useItemWebSocket = (groupId: number) => {
       }),
     );
   };
+
+  const completeSelection = () => {
+   if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+    wsRef.current.send(
+      JSON.stringify({
+        action: "complete",
+      }),
+    ); 
+  }
 
   useEffect(() => {
     if (!groupId) return;
@@ -66,6 +76,8 @@ export const useItemWebSocket = (groupId: number) => {
               : item;
           });
         });
+      } else if (data.type === "items_selection_completed") {
+        setCompleted(true);
       }
     };
 
@@ -80,8 +92,10 @@ export const useItemWebSocket = (groupId: number) => {
 
   return {
     items,
+    completed,
     connected,
     chooseItem,
     removeItem,
+    completeSelection,
   };
 };
