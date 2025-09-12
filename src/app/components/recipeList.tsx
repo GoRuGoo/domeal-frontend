@@ -36,17 +36,11 @@ export function RecipeList({ groups, userId, user, setUser }: RecipeListProps) {
   const handleIntoRoom = (id: number) => {
     const joinGroup = async () => {
       try {
-        const res = await fetch("/api/join-group", {
+        await fetch("/api/join-group", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ group_id: id }),
         });
-
-        const data = await res.json();
-
-        // if (!res.ok) {
-        //   throw new Error(data.error || "Failed to join group");
-        // }
         setUser(user);
         router.push(`/room/${id}/division?user_id=${userId}`);
       } catch (error) {
