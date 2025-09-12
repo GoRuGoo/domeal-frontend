@@ -56,8 +56,9 @@ export const useItemWebSocket = (groupId: number) => {
     if (!groupId) return;
 
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const address = process.env.ENDPOINT_URL?.split("://")[1];
     const ws = new WebSocket(
-      `${protocol}://localhost/ws/select-item?group_id=${groupId}`,
+      `${protocol}://${address}/ws/select-item?group_id=${groupId}`,
     );
     wsRef.current = ws;
 
