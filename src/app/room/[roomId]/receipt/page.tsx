@@ -30,40 +30,42 @@ export default function Receipt() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const [isCameraActive, setIsCameraActive] = useState<boolean>(true);
-  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  // const [isCameraActive, setIsCameraActive] = useState<boolean>(true);
+  // const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
 
-  const handleCapture = () => {
-    const video = videoRef.current;
-    if (video) {
-      const canvas = document.createElement("canvas");
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      const context = canvas.getContext("2d");
+  // const handleCapture = () => {
+  //   const video = videoRef.current;
+  //   if (video) {
+  //     const canvas = document.createElement("canvas");
+  //     canvas.width = video.videoWidth;
+  //     canvas.height = video.videoHeight;
+  //     const context = canvas.getContext("2d");
 
-      if (context) {
-        // canvasにvideoの現在のフレームを描画
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  //     if (context) {
+  //       // canvasにvideoの現在のフレームを描画
+  //       context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // 描画した画像をデータURLとして取得
-        const imageDataURL = canvas.toDataURL("image/png");
-        setCapturedImage(imageDataURL); // 状態に画像を保存
-        setIsCameraActive(false); // カメラを停止
-      }
-    }
-  };
+  //       // 描画した画像をデータURLとして取得
+  //       const imageDataURL = canvas.toDataURL("image/png");
+  //       setCapturedImage(imageDataURL); // 状態に画像を保存
+  //       setIsCameraActive(false); // カメラを停止
+  //     }
+  //   }
+  // };
 
-  const handleRetake = () => {
-    setCapturedImage(null);
-    setIsCameraActive(true);
-  };
+  // const handleRetake = () => {
+  //   setCapturedImage(null);
+  //   setIsCameraActive(true);
+  // };
 
   const handleConfirm = async () => {
-    if (!capturedImage) return;
+    // if (!capturedImage) return;
     try {
       setIsUploading(true);
-      const blob = await (await fetch(capturedImage)).blob();
+      // const blob = await (await fetch(capturedImage)).blob();
+      const response = await fetch("/receipt.png");
+      const blob = await response.blob();
       const signedRes = await fetch("/api/issue-signed-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -112,46 +114,46 @@ export default function Receipt() {
     }
   };
 
-  useEffect(() => {
-    if (myRole !== "shopping") return;
-    const constraints: MediaStreamConstraints = {
-      audio: false,
-      video: {
-        width: { min: 1280, ideal: 1920, max: 2560 },
-        height: { min: 720, ideal: 1080, max: 1440 },
-        frameRate: {
-          max: 30,
-        },
-        // スマホでは以下のコメント外す
-        facingMode: {
-          exact: "environment",
-        },
-      },
-    };
+  // useEffect(() => {
+  //   if (myRole !== "shopping") return;
+  //   const constraints: MediaStreamConstraints = {
+  //     audio: false,
+  //     video: {
+  //       width: { min: 1280, ideal: 1920, max: 2560 },
+  //       height: { min: 720, ideal: 1080, max: 1440 },
+  //       frameRate: {
+  //         max: 30,
+  //       },
+  //       // スマホでは以下のコメント外す
+  //       facingMode: {
+  //         exact: "environment",
+  //       },
+  //     },
+  //   };
 
-    const openCamera = async () => {
-      if (isCameraActive && videoRef.current) {
-        try {
-          if (!navigator.mediaDevices?.getUserMedia) {
-            console.error("このブラウザはカメラに対応していません");
-            return;
-          }
-          const stream = await navigator.mediaDevices.getUserMedia(constraints);
-          streamRef.current = stream;
-          videoRef.current.srcObject = stream;
-        } catch (error) {
-          console.error("Failed to catch a camera: ", error);
-        }
-      }
-    };
-    openCamera();
+  //   const openCamera = async () => {
+  //     if (isCameraActive && videoRef.current) {
+  //       try {
+  //         if (!navigator.mediaDevices?.getUserMedia) {
+  //           console.error("このブラウザはカメラに対応していません");
+  //           return;
+  //         }
+  //         const stream = await navigator.mediaDevices.getUserMedia(constraints);
+  //         streamRef.current = stream;
+  //         videoRef.current.srcObject = stream;
+  //       } catch (error) {
+  //         console.error("Failed to catch a camera: ", error);
+  //       }
+  //     }
+  //   };
+  //   openCamera();
 
-    return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop());
-      }
-    };
-  }, [isCameraActive, myRole]);
+  //   return () => {
+  //     if (streamRef.current) {
+  //       streamRef.current.getTracks().forEach((track) => track.stop());
+  //     }
+  //   };
+  // }, [isCameraActive, myRole]);
 
   useEffect(() => {
     const url = `/api/subscribe-flow?group_id=${groupId}`;
@@ -222,7 +224,34 @@ export default function Receipt() {
                 paddingBottom: "130%",
               }}
             >
-              {capturedImage ? (
+              <Image
+                src="/receipt.png"
+                alt="固定レシート画像"
+                style={{
+                  width: "calc(100% - 16px)",
+                  height: "calc(100% - 16px)",
+                  objectFit: "cover",
+                  position: "absolute",
+                  top: "8px",
+                  left: "8px",
+                }}
+              />
+            </Box>
+
+            <Button
+              bg="#ECA517FF"
+              color="white"
+              _hover={{ bg: "orange.500" }}
+              borderRadius="lg"
+              py={6}
+              px={10}
+              onClick={handleConfirm}
+              disabled={isUploading}
+            >
+              進む
+            </Button>
+
+            {/* {capturedImage ? (
                 <Image
                   src={capturedImage}
                   alt="Captured receipt"
@@ -305,7 +334,7 @@ export default function Receipt() {
                   </Button>
                 </Flex>
               </Box>
-            )}
+            )} */}
           </Flex>
         ) : (
           <Box
