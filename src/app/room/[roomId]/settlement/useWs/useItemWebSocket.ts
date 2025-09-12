@@ -18,6 +18,9 @@ export const useItemWebSocket = (groupId: number) => {
   const [connected, setConnected] = useState<boolean>(false);
   const [completed, setCompleted] = useState<boolean>(false);
 
+  const imageCache = useRef<Map<string, string>>(new Map());
+  const [itemImages, setItemImages] = useState<Record<string, string>>({});
+
   const chooseItem = (receiptId: number, itemId: number) => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
     wsRef.current.send(
@@ -90,8 +93,37 @@ export const useItemWebSocket = (groupId: number) => {
     };
   }, [groupId]);
 
+  useEffect(() => {
+    const fetchImage = async (query: string) => {
+      try {
+        const apiKey = process.env.NEXT_PUBLIC_CUSTOM_SEARCH_API;
+        const cx = process.env.NEXT_PUBLIC_CX_KEY;
+        if (!apiKey || !cx) return;
+        const res = await fetch(
+          `https://www.googleapis.com/customsearch/v1?q=${query}&cx=${cx}&searchType=image&num=10&key=${apiKey}`,
+        );
+        const data = await res.json();
+        const url = data.items[0].link || "";
+        console.log(url);
+        if (url) {
+          imageCache.current.set(query, url);
+          setItemImages((prev) => ({ ...prev, [query]: url }));
+        }
+      } catch (error) {
+        console.error("Unsplash fetch error:", error);
+      }
+    };
+
+    items.forEach((item) => {
+      if (!imageCache.current.has(item.name)) {
+        fetchImage(item.name);
+      }
+    });
+  }, [items]);
+
   return {
     items,
+    itemImages,
     completed,
     connected,
     chooseItem,

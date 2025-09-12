@@ -20,6 +20,7 @@ export default function Settlment() {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const {
     items,
+    itemImages,
     completed,
     connected,
     chooseItem,
@@ -97,8 +98,8 @@ export default function Settlment() {
                 >
                   <Image
                     key={item.id}
-                    src="https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg.webp"
-                    alt=""
+                    src={itemImages[item.name] || "/do!meal-icon.png"}
+                    alt="写真を検索できませんでした"
                     position="absolute"
                     top="0"
                     left="0"
