@@ -60,7 +60,11 @@ export function RecipeList({ groups, userId, user, setUser }: RecipeListProps) {
             "Content-Type": "application/json",
           },
           credentials: "include",
-          body: JSON.stringify({ name, menu, photo, userId }),
+          body: JSON.stringify({
+            name,
+            menu,
+            menu_image_url: photo,
+          }),
         });
 
         if (!res.ok) {

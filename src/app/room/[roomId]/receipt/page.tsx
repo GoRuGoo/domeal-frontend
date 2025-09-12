@@ -123,9 +123,9 @@ export default function Receipt() {
           max: 30,
         },
         // スマホでは以下のコメント外す
-        // facingMode: {
-        //   exact: "environment",
-        // },
+        facingMode: {
+          exact: "environment",
+        },
       },
     };
 
