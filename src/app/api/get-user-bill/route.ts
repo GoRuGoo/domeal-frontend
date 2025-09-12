@@ -5,7 +5,7 @@ export async function GET(req: NextRequest) {
     const cookie = req.headers.get("cookie") || "";
 
     const ENDPOINT_URL = process.env.ENDPOINT_URL;
-    const res = await fetch(`${ENDPOINT_URL}/api/get-user-bill`, {
+    const res = await fetch(`${ENDPOINT_URL}/rest/get-user-bill`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     if (!res.ok) {
       return NextResponse.json(
         { error: "Failed to fetch bills" },
-        { status: res.status },
+        { status: res.status }
       );
     }
 
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     console.error("API error:", error);
     return NextResponse.json(
       { error: "INternal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

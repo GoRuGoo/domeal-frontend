@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const ENDPOINT_URL = process.env.ENDPOINT_URL;
-    const res = await fetch(`${ENDPOINT_URL}/api/join-group`, {
+    const res = await fetch(`${ENDPOINT_URL}/rest/join-group`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

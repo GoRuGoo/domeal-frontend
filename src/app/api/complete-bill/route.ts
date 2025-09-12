@@ -9,14 +9,14 @@ export async function POST(req: NextRequest) {
   const ENDPOINT_URL = process.env.ENDPOINT_URL;
   try {
     const backendRes = await fetch(
-      `${ENDPOINT_URL}/api/complete-bill?bill_id=${billId}`,
+      `${ENDPOINT_URL}/rest/complete-bill?bill_id=${billId}`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Cookie: req.headers.get("cookie") || "", // 認証Cookieを転送
         },
-      },
+      }
     );
 
     const data = await backendRes.json();
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     console.error(error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

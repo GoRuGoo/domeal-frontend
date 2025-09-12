@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   }
 
   const ENDPOINT_URL = process.env.ENDPOINT_URL;
-  const url = `${ENDPOINT_URL}/api/subscribe-flow?group_id=${groupId}`;
+  const url = `${ENDPOINT_URL}/rest/subscribe-flow?group_id=${groupId}`;
   const res = await fetch(url, {
     method: "GET",
     headers: {

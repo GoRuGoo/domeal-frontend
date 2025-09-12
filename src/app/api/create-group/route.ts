@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
     const cookie = req.headers.get("cookie") || "";
     const body = await req.json();
     const ENDPOINT_URL = process.env.ENDPOINT_URL;
-    const res = await fetch(`${ENDPOINT_URL}/api/create-group`, {
+    const res = await fetch(`${ENDPOINT_URL}/rest/create-group`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
       const errorData = await res.json();
       return NextResponse.json(
         { error: errorData.error },
-        { status: res.status },
+        { status: res.status }
       );
     }
 
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
