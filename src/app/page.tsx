@@ -13,7 +13,7 @@ export default function HomePage() {
   useEffect(() => {
     const login = async () => {
       try {
-        const res = await fetch("/api/check-login-status", {
+        const res = await fetch("/rest/check-login-status", {
           method: "GET",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
