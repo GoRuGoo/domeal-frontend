@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Footer } from "../components/footer";
-import { User } from "../type";
+import { User, useUserStore } from "../type";
 
 type Bill = {
   id: number;
@@ -23,7 +23,9 @@ type Bill = {
 export default function Profile() {
   const [paypalName, setPaypalName] = useState<string>("");
   const [bills, setBills] = useState<Bill[]>([]);
-  const [user, setUser] = useState<User | null>(null);
+
+  const setUser = useUserStore((s) => s.setUser);
+  const user = useUserStore((s) => s.user);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPaypalName(e.target.value);
@@ -61,25 +63,25 @@ export default function Profile() {
     }
   };
 
-  const getCookie = (name: string) => {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(";").shift();
-  };
+  // const getCookie = (name: string) => {
+  //   const value = `; ${document.cookie}`;
+  //   const parts = value.split(`; ${name}=`);
+  //   if (parts.length === 2) return parts.pop()?.split(";").shift();
+  // };
 
-  useEffect(() => {
-    const userId = getCookie("user_id");
-    const userName = getCookie("user_name");
-    const userPicture = getCookie("user_picture");
+  // useEffect(() => {
+  //   const userId = getCookie("user_id");
+  //   const userName = getCookie("user_name");
+  //   const userPicture = getCookie("user_picture");
 
-    if (userId && userName && userPicture) {
-      setUser({
-        id: Number(userId),
-        name: userName,
-        picture: userPicture,
-      });
-    }
-  }, []);
+  //   if (userId && userName && userPicture) {
+  //     setUser({
+  //       id: Number(userId),
+  //       name: userName,
+  //       picture: userPicture,
+  //     });
+  //   }
+  // }, []);
 
   useEffect(() => {
     fetchBills();
