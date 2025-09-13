@@ -77,7 +77,11 @@ export default function Receipt() {
         throw new Error("署名付きURLの発行に失敗しました");
       }
 
-      const { upload_url: UploadURL, file_key: FileKey, receipt_id: ReceiptID } = await signedRes.json();
+      const {
+        upload_url: UploadURL,
+        file_key: FileKey,
+        receipt_id: ReceiptID,
+      } = await signedRes.json();
 
       const uploadRes = await fetch(UploadURL, {
         method: "PUT",

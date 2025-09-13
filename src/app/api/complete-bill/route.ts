@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
           "Content-Type": "application/json",
           Cookie: req.headers.get("cookie") || "", // 認証Cookieを転送
         },
-      }
+      },
     );
 
     const data = await backendRes.json();
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     console.error(error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

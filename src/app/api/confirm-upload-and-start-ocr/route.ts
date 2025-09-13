@@ -15,13 +15,13 @@ export async function POST(req: NextRequest) {
           Cookie: cookie,
         },
         body: JSON.stringify(body),
-      }
+      },
     );
 
     if (!res.ok) {
       return NextResponse.json(
         { error: "Failed to get signed URL" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     console.error(err);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     if (!res.ok) {
       return NextResponse.json(
         { error: "Failed to fetch bills" },
-        { status: res.status }
+        { status: res.status },
       );
     }
 
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     console.error("API error:", error);
     return NextResponse.json(
       { error: "INternal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

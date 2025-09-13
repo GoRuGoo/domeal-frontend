@@ -147,7 +147,7 @@ export function RecipeList({ groups, userId, user, setUser }: RecipeListProps) {
                         borderRadius="full"
                         mx="2px"
                       />
-                    )
+                    ),
                   )}
                 </Flex>
               </Box>

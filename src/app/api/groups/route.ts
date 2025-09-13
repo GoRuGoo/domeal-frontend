@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   if (!res.ok) {
     return NextResponse.json(
       { error: "Failed to fetch groups" },
-      { status: res.status }
+      { status: res.status },
     );
   }
 

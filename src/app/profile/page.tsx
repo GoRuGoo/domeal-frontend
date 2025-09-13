@@ -6,6 +6,7 @@ import {
   Image,
   Input,
   Link,
+  Spinner,
   Table,
   Text,
 } from "@chakra-ui/react";
@@ -23,21 +24,27 @@ type Bill = {
 export default function Profile() {
   const [paypalName, setPaypalName] = useState<string>("");
   const [bills, setBills] = useState<Bill[]>([]);
+  const [user, setUser] = useState<User>();
 
-  const setUser = useUserStore((s) => s.setUser);
+  // const setUser = useUserStore((s) => s.setUser);
   // const user = useUserStore((s) => s.user);
 
-  const getCookie = (name: string) => {
-    const cookies = document.cookie.split("; ");
-    const found = cookies.find((row) => row.startsWith(`${name}=`));
-    return found ? found.split("=")[1] : null;
-  }
+  useEffect(() => {
+    const getCookie = (name: string) => {
+      const cookies = document.cookie.split("; ");
+      const found = cookies.find((row) => row.startsWith(`${name}=`));
+      return found ? found.split("=")[1] : null;
+    };
 
-  const user: User = {
-    id: Number(getCookie("user_id")),
-    name: getCookie("user_name") || "",
-    picture: getCookie("user_picture") || "",
-  };
+    const id = getCookie("user_id");
+    if (id) {
+      setUser({
+        id: Number(id),
+        name: getCookie("user_name") || "",
+        picture: getCookie("user_picture") || "",
+      });
+    }
+  }, [setUser]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPaypalName(e.target.value);
@@ -99,7 +106,14 @@ export default function Profile() {
     fetchBills();
   }, []);
 
-  if (!user) return;
+  if (!user) {
+    return (
+      <Flex justify="center" align="center" minH="100vh">
+        <Spinner size="xl" color="#ECA517FF" />
+        <Text ml={4}>ユーザー情報を読み込み中...</Text>
+      </Flex>
+    );
+  }
 
   return (
     <Flex

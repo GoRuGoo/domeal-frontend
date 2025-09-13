@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
       const errorData = await res.json();
       return NextResponse.json(
         { error: errorData.error },
-        { status: res.status }
+        { status: res.status },
       );
     }
 
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
