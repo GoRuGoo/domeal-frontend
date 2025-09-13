@@ -25,7 +25,19 @@ export default function Profile() {
   const [bills, setBills] = useState<Bill[]>([]);
 
   const setUser = useUserStore((s) => s.setUser);
-  const user = useUserStore((s) => s.user);
+  // const user = useUserStore((s) => s.user);
+
+  const getCookie = (name: string) => {
+    const cookies = document.cookie.split("; ");
+    const found = cookies.find((row) => row.startsWith(`${name}=`));
+    return found ? found.split("=")[1] : null;
+  }
+
+  const user: User = {
+    id: Number(getCookie("user_id")),
+    name: getCookie("user_name") || "",
+    picture: getCookie("user_picture") || "",
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPaypalName(e.target.value);
