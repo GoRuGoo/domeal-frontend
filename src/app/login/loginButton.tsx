@@ -5,7 +5,7 @@ import { Button, Image, Text } from "@chakra-ui/react";
 export default function LoginButton() {
   const handleLineLogin = async () => {
     try {
-      const res = await fetch("/rest/line-auth");
+      const res = await fetch("/api/line-auth");
       const data = await res.json();
 
       if (data.authorizeUrl) {
