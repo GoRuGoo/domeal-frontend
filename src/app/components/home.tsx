@@ -19,9 +19,9 @@ export default function Home({ user }: HomeProps) {
 
   useEffect(() => {
     if (user) {
-      document.cookie = `user_id=${user.id}; path=/`;
-      document.cookie = `user_name=${user.name}; path=/`;
-      document.cookie = `user_picture=${user.picture}; path=/`;
+      document.cookie = `user_id=${user.id}; path=/; Secure`;
+      document.cookie = `user_name=${user.name}; path=/; Secure`;
+      document.cookie = `user_picture=${user.picture}; path=/; Secure`;
     }
   }, [user]);
 
