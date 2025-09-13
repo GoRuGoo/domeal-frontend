@@ -33,7 +33,7 @@ export default function Profile() {
 
   const fetchBills = async () => {
     try {
-      const res = await fetch("/api/get-user-bill");
+      const res = await fetch("/rest/get-user-bill");
       if (!res.ok) {
         throw new Error("Failed to fetch bills");
       }
@@ -46,7 +46,7 @@ export default function Profile() {
 
   const handleComplete = async (billId: number) => {
     try {
-      const res = await fetch(`/api/complete-bill?bill_id=${billId}`, {
+      const res = await fetch(`/rest/complete-bill?bill_id=${billId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

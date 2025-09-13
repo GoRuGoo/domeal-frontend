@@ -28,7 +28,7 @@ export default function Home({ user }: HomeProps) {
   useEffect(() => {
     const fetchGroups = async () => {
       try {
-        const res = await fetch("/api/groups"); // これだけでOK
+        const res = await fetch("/rest/groups"); // これだけでOK
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const data = await res.json();
         setGroups(data.groups); // data 内の groups 配列をセット

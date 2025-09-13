@@ -36,7 +36,7 @@ export function RecipeList({ groups, userId, user, setUser }: RecipeListProps) {
   const handleIntoRoom = (id: number) => {
     const joinGroup = async () => {
       try {
-        await fetch("/api/join-group", {
+        await fetch("/rest/join-group", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ group_id: id }),
@@ -54,7 +54,7 @@ export function RecipeList({ groups, userId, user, setUser }: RecipeListProps) {
   const handleCreate = () => {
     const createGroup = async () => {
       try {
-        const res = await fetch("/api/create-group", {
+        const res = await fetch("/rest/create-group", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -147,7 +147,7 @@ export function RecipeList({ groups, userId, user, setUser }: RecipeListProps) {
                         borderRadius="full"
                         mx="2px"
                       />
-                    ),
+                    )
                   )}
                 </Flex>
               </Box>

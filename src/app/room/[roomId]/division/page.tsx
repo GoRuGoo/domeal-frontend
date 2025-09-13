@@ -41,7 +41,7 @@ export default function DivisionWork() {
   const [selectedRole, setSelectedRole] = useState<RoleAssignType>("");
   const { roleState, connected, assignRole, completeRoles } = useRoleWebSocket(
     Number(groupId),
-    Number(userId),
+    Number(userId)
   );
 
   const handleSelect = (role: RoleAssignType) => {
@@ -55,7 +55,7 @@ export default function DivisionWork() {
   };
 
   useEffect(() => {
-    const url = `/api/subscribe-flow?group_id=${groupId}`;
+    const url = `/rest/subscribe-flow?group_id=${groupId}`;
     const eventSource = new EventSource(url);
 
     eventSource.onmessage = (event) => {
@@ -76,7 +76,7 @@ export default function DivisionWork() {
   useEffect(() => {
     if (messages === "move_to_waiting_or_upload_receipt") {
       router.push(
-        `/room/${groupId}/receipt?user_id=${userId}&role=${selectedRole}`,
+        `/room/${groupId}/receipt?user_id=${userId}&role=${selectedRole}`
       );
     }
   }, [groupId, router, messages, userId, selectedRole]);

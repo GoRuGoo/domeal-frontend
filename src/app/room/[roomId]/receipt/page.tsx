@@ -66,7 +66,7 @@ export default function Receipt() {
       // const blob = await (await fetch(capturedImage)).blob();
       const response = await fetch("/receipt.png");
       const blob = await response.blob();
-      const signedRes = await fetch("/api/issue-signed-url", {
+      const signedRes = await fetch("/rest/issue-signed-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -91,7 +91,7 @@ export default function Receipt() {
 
       console.log("アップロード成功:", { FileKey, ReceiptID });
 
-      const ocrRes = await fetch("/api/confirm-upload-and-start-ocr", {
+      const ocrRes = await fetch("/rest/confirm-upload-and-start-ocr", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -156,7 +156,7 @@ export default function Receipt() {
   // }, [isCameraActive, myRole]);
 
   useEffect(() => {
-    const url = `/api/subscribe-flow?group_id=${groupId}`;
+    const url = `/rest/subscribe-flow?group_id=${groupId}`;
     const eventSource = new EventSource(url);
 
     eventSource.onmessage = (event) => {
