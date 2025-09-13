@@ -19,7 +19,7 @@ import { MdKeyboardArrowRight } from "react-icons/md";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useRoleWebSocket } from "./useWs/useRoleWebSocket";
-import { useUserStore } from "@/app/type";
+import { User, useUserStore } from "@/app/type";
 
 type FlowMessage = string;
 
@@ -34,7 +34,19 @@ export default function DivisionWork() {
   const userId = searchParams.get("user_id");
 
   const setUser = useUserStore((s) => s.setUser);
-  const user = useUserStore((s) => s.user);
+  // const user = useUserStore((s) => s.user);
+
+  const getCookie = (name: string) => {
+    const cookies = document.cookie.split("; ");
+    const found = cookies.find((row) => row.startsWith(`${name}=`));
+    return found ? found.split("=")[1] : null;
+  }
+
+  const user: User = {
+    id: Number(getCookie("user_id")),
+    name: getCookie("user_name") || "",
+    picture: getCookie("user_picture") || "",
+  };
 
   const [isClicked, setIsClicked] = useState<boolean>(false);
   const [messages, setMessages] = useState<FlowMessage>();
